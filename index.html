@@ -108,6 +108,8 @@ button { cursor: pointer; }
   display: flex; gap: 12px; align-items: center; justify-content: center; flex-wrap: wrap;
   text-align: center;
 }
+.proto-short { display: none; }
+@media (max-width: 520px) { .proto-short { display: inline; } }
 .proto b { font-family: var(--display); font-weight: 600; letter-spacing: .12em; text-transform: uppercase; }
 .proto button {
   background: transparent; border: 1px solid currentColor; border-radius: 999px;
@@ -336,7 +338,7 @@ ol.steps li.done .main-t { color: var(--ink-3); text-decoration: line-through; t
 .field select, .field textarea, .field input {
   border: 1px solid var(--line); border-radius: 8px; background: var(--panel-2); padding: 8px 10px; width: 100%;
 }
-.field textarea { min-height: 200px; resize: vertical; font: 13px/1.5 var(--mono); }
+.field textarea { min-height: 260px; resize: vertical; font: 13px/1.5 var(--mono); }
 .modal footer { padding: 12px 20px 16px; display: flex; gap: 8px; justify-content: flex-end; align-items: center; flex-wrap: wrap; }
 .modal footer .note { margin-right: auto; font-size: 12px; color: var(--ink-3); }
 .btn-2 { border: 1px solid var(--line); background: var(--panel); border-radius: 8px; padding: 8px 14px; }
@@ -364,7 +366,8 @@ ol.steps li.done .main-t { color: var(--ink-3); text-decoration: line-through; t
   .brand small { display: none; }
   .row2 { grid-template-columns: 1fr; }
   .top { gap: 10px; }
-  .hist-btn { margin-left: auto; }
+  .brand { flex: 1; }
+  .proto-long { display: none; }
 }
 @media (prefers-reduced-motion: reduce) {
   * { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
@@ -375,7 +378,8 @@ ol.steps li.done .main-t { color: var(--ink-3); text-decoration: line-through; t
 <div class="app">
   <div class="proto" role="note">
     <b>Prototype</b>
-    <span>Mock orders and scripted answers. Not connected to SAP or Deposco.</span>
+    <span class="proto-long">Mock orders and scripted answers. Not connected to SAP or Deposco.</span>
+    <span class="proto-short">Mock data, scripted answers</span>
     <button type="button" id="guide-open">Demo guide</button>
   </div>
 
@@ -1002,7 +1006,10 @@ ${[...done, ...notDone].join("\n") || "  None yet"}
 Request:
   ${sc.ask}`;
     $("esc-scrim").hidden = false;
-    $("esc-body").focus();
+    const body = $("esc-body");
+    body.focus();
+    body.setSelectionRange(0, 0);
+    body.scrollTop = 0;
   }
   function closeEscalate() { $("esc-scrim").hidden = true; }
 
@@ -1025,6 +1032,14 @@ Request:
   }
 
   function startNew() {
+    const blank = convs.find(c => !c.messages.some(m => m.role === "user"));
+    if (blank) {
+      blank.stamp = Date.now();
+      blank.when = "Today " + hhmm();
+      select(blank);
+      $("input").focus({ preventScroll: true });
+      return;
+    }
     const c = newConv();
     c.messages.push({
       role: "agent", kind: "suggest",
@@ -1070,6 +1085,12 @@ Request:
   input.addEventListener("keydown", e => {
     if (e.key === "Enter" && !e.shiftKey && !e.isComposing) { e.preventDefault(); $("composer").requestSubmit(); }
   });
+  const narrow = window.matchMedia("(max-width: 520px)");
+  const setPlaceholder = () => {
+    input.placeholder = narrow.matches ? "Problem or order number" : "Describe the problem or type an order number, e.g. SO-100437";
+  };
+  setPlaceholder();
+  narrow.addEventListener("change", setPlaceholder);
   function grow() { input.style.height = "auto"; input.style.height = Math.min(input.scrollHeight, 140) + "px"; }
   input.addEventListener("input", grow);
 
