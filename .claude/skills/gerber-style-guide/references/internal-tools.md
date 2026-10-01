@@ -44,11 +44,12 @@ Dark mode is defined in `tokens.css` and follows the OS setting unless `data-the
 - Show the two systems side by side, SAP then Deposco, always in that order, with mismatches marked.
 - Put a person's next action in a numbered list only when it's a real sequence. Label each step with who does it.
 
-## Applying it to the Warehouse Order Assistant (`index.html`)
+## The Warehouse Order Assistant (`index.html`)
 
-The prototype predates this guide. To align it:
-1. Swap its local palette for `tokens.css`. Its blue accent `#1D4F91` becomes `--gcw-navy`, its grey grounds become cream and white, and its hi-vis banner becomes Maize.
-2. Replace IBM Plex Sans and IBM Plex Sans Condensed with Montserrat. Headings move to weight 400 and labels stay uppercase 600. Keep IBM Plex Mono for codes.
-3. Square off the primary buttons (Send, New issue, Send escalation) and make them uppercase.
-4. Rename mock items to the Gerber product pattern (for example, "5-Pack Baby Neutral Assorted Bodysuits").
-5. Recheck both themes and the phone layout.
+The prototype follows this guide (applied 2026-10-01). Use it as the reference for how the guide looks in a working tool.
+
+- The tokens are inlined at the top of its `<style>`, because GitHub Pages doesn't serve the `.claude/` folder. If you change `tokens.css`, copy the change there too.
+- Montserrat is used throughout. Headings are 400, and labels are uppercase 600 with 0.05em tracking. IBM Plex Mono is used for order numbers, SKUs, IDocs and bin locations.
+- Primary buttons (New issue, Send, Send escalation) are square, navy and uppercase. Chips, cards and inputs use the 6px tool radius.
+- The prototype banner uses the Maize solid with navy text.
+- Mock items follow the Gerber product-name pattern.
