@@ -26,6 +26,17 @@ To show the clarifying questions, describe the problem without an order number (
 
 The sidebar has three earlier conversations (two resolved, one escalated) to show the issue history.
 
+## Style guide
+
+Brand rules for Gerber work in this repo live in a Claude Code skill at [`.claude/skills/gerber-style-guide/`](.claude/skills/gerber-style-guide/SKILL.md):
+
+- `tokens.css`: colors, type and shape as CSS variables, in light and dark
+- `references/brand.md`: palette, typography, components, logo and imagery rules
+- `references/voice.md`: tone, trademark rules (Onesies® Brand) and product and size naming
+- `references/internal-tools.md`: how to adapt the retail brand for operational tools like this one
+
+Claude Code loads the skill automatically when you work on Gerber assets in this repo. It's built from Gerber's public website, not the official brand book. Official guidelines go in `references/official/` and take precedence.
+
 ## What to align on with the customer
 
 - Which mismatch types matter most, and what the real top 5 are by volume
