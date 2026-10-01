@@ -1,0 +1,1129 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Warehouse Order Assistant</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+:root {
+  --bg: #EEF1F4;
+  --panel: #FFFFFF;
+  --panel-2: #F5F7F9;
+  --sunk: #E4E9EE;
+  --ink: #16202B;
+  --ink-2: #4B5967;
+  --ink-3: #6E7C8A;
+  --line: #D3DAE1;
+  --accent: #1D4F91;
+  --accent-ink: #FFFFFF;
+  --accent-soft: #DFE8F5;
+  --ok: #2B7A4B;
+  --ok-soft: #DFF0E5;
+  --warn: #8F5B00;
+  --warn-soft: #FAEED5;
+  --bad: #B0342A;
+  --bad-soft: #F8E2DF;
+  --hivis: #F2C230;
+  --hivis-ink: #1E1A0C;
+  --shadow: 0 1px 2px rgba(22, 32, 43, .06), 0 8px 24px rgba(22, 32, 43, .08);
+  --display: "IBM Plex Sans Condensed", "Arial Narrow", "Helvetica Neue", Arial, sans-serif;
+  --body: "IBM Plex Sans", "Helvetica Neue", Arial, system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #0E141A;
+    --panel: #151D25;
+    --panel-2: #1A232D;
+    --sunk: #202B36;
+    --ink: #E4EAF0;
+    --ink-2: #A3B0BD;
+    --ink-3: #7F8D9B;
+    --line: #2A3643;
+    --accent: #7AAAE8;
+    --accent-ink: #0B1520;
+    --accent-soft: #1C2D43;
+    --ok: #63C28F;
+    --ok-soft: #16301F;
+    --warn: #E2AE4C;
+    --warn-soft: #33270F;
+    --bad: #EF8174;
+    --bad-soft: #3A1B17;
+    --hivis: #E3B53A;
+    --hivis-ink: #1E1A0C;
+    --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 8px 24px rgba(0, 0, 0, .35);
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #0E141A;
+  --panel: #151D25;
+  --panel-2: #1A232D;
+  --sunk: #202B36;
+  --ink: #E4EAF0;
+  --ink-2: #A3B0BD;
+  --ink-3: #7F8D9B;
+  --line: #2A3643;
+  --accent: #7AAAE8;
+  --accent-ink: #0B1520;
+  --accent-soft: #1C2D43;
+  --ok: #63C28F;
+  --ok-soft: #16301F;
+  --warn: #E2AE4C;
+  --warn-soft: #33270F;
+  --bad: #EF8174;
+  --bad-soft: #3A1B17;
+  --hivis: #E3B53A;
+  --hivis-ink: #1E1A0C;
+  --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 8px 24px rgba(0, 0, 0, .35);
+}
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { height: 100%; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 15px/1.5 var(--body);
+  -webkit-font-smoothing: antialiased;
+}
+button, input, select, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+.mono { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+
+/* ---------- Shell ---------- */
+.app { height: 100%; display: grid; grid-template-rows: auto auto 1fr; }
+.proto {
+  background: var(--hivis);
+  color: var(--hivis-ink);
+  font: 500 12px/1.3 var(--body);
+  letter-spacing: .04em;
+  padding: 6px 16px;
+  display: flex; gap: 12px; align-items: center; justify-content: center; flex-wrap: wrap;
+  text-align: center;
+}
+.proto b { font-family: var(--display); font-weight: 600; letter-spacing: .12em; text-transform: uppercase; }
+.proto button {
+  background: transparent; border: 1px solid currentColor; border-radius: 999px;
+  padding: 1px 10px; font-size: 12px; color: inherit;
+}
+
+.top {
+  display: flex; align-items: center; gap: 16px;
+  padding: 10px 16px;
+  background: var(--panel);
+  border-bottom: 1px solid var(--line);
+}
+.brand { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.mark {
+  width: 30px; height: 30px; flex: none; border-radius: 6px;
+  background: var(--accent); color: var(--accent-ink);
+  display: grid; place-items: center;
+}
+.brand h1 {
+  margin: 0; font: 600 18px/1.1 var(--display); letter-spacing: .01em;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.brand small { display: block; font: 400 12px/1.2 var(--body); color: var(--ink-3); }
+.systems { margin-left: auto; display: flex; gap: 8px; flex-wrap: wrap; }
+.sys {
+  display: inline-flex; align-items: center; gap: 6px;
+  font: 500 12px/1 var(--body); color: var(--ink-2);
+  padding: 6px 10px; border: 1px solid var(--line); border-radius: 999px; background: var(--panel-2);
+}
+.sys i { width: 7px; height: 7px; border-radius: 50%; background: var(--ok); }
+.sys .mono { color: var(--ink-3); font-size: 11px; }
+.hist-btn {
+  display: none; border: 1px solid var(--line); background: var(--panel-2);
+  border-radius: 8px; padding: 6px 10px; font-size: 13px;
+}
+
+.main { display: grid; grid-template-columns: 300px 1fr; min-height: 0; }
+
+/* ---------- Sidebar ---------- */
+.side {
+  background: var(--panel);
+  border-right: 1px solid var(--line);
+  display: flex; flex-direction: column; min-height: 0;
+}
+.side-head { padding: 14px 16px 10px; display: flex; flex-direction: column; gap: 12px; }
+.new-btn {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  background: var(--accent); color: var(--accent-ink);
+  border: 0; border-radius: 8px; padding: 10px 12px; font-weight: 600;
+}
+.label {
+  font: 600 11px/1 var(--display); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-3);
+}
+.convs { list-style: none; margin: 0; padding: 0 8px 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 2px; }
+.conv {
+  width: 100%; text-align: left; background: transparent; border: 1px solid transparent;
+  border-radius: 8px; padding: 10px 10px; display: grid; gap: 4px;
+  grid-template-columns: 1fr auto;
+}
+.conv:hover { background: var(--panel-2); }
+.conv[aria-current="true"] { background: var(--accent-soft); border-color: transparent; }
+.conv .no { font: 500 13px/1.2 var(--mono); }
+.conv .what { grid-column: 1 / -1; font-size: 13px; color: var(--ink-2); line-height: 1.35; }
+.conv .when { grid-column: 1 / -1; font-size: 12px; color: var(--ink-3); }
+
+.pill {
+  display: inline-flex; align-items: center; gap: 5px; white-space: nowrap;
+  font: 600 11px/1 var(--body); letter-spacing: .02em;
+  padding: 4px 8px; border-radius: 999px;
+}
+.pill::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.pill.open { background: var(--accent-soft); color: var(--accent); }
+.pill.resolved { background: var(--ok-soft); color: var(--ok); }
+.pill.escalated { background: var(--warn-soft); color: var(--warn); }
+
+/* ---------- Chat ---------- */
+.chat { display: grid; grid-template-rows: auto 1fr auto; min-height: 0; min-width: 0; }
+.chat-head {
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  padding: 10px 24px; border-bottom: 1px solid var(--line); background: var(--panel-2);
+  min-height: 52px;
+}
+.chat-head .ord { font: 500 15px/1.2 var(--mono); }
+.chat-head .cust { color: var(--ink-2); font-size: 14px; }
+.chat-head .ship { font-size: 13px; color: var(--ink-3); }
+.chat-head .ship.today { color: var(--bad); font-weight: 500; }
+.chat-head .spacer { flex: 1; }
+.chat-head .empty { color: var(--ink-3); font-size: 14px; }
+.esc-btn {
+  border: 1px solid var(--warn); color: var(--warn); background: transparent;
+  border-radius: 8px; padding: 6px 12px; font-size: 13px; font-weight: 600;
+}
+.esc-btn:hover { background: var(--warn-soft); }
+
+.thread { overflow-y: auto; padding: 24px 24px 8px; scroll-behavior: smooth; }
+.thread-inner { max-width: 760px; margin: 0 auto; display: flex; flex-direction: column; gap: 14px; }
+
+.msg { display: flex; flex-direction: column; gap: 8px; max-width: 100%; }
+.msg.user { align-items: flex-end; }
+.bubble {
+  background: var(--accent); color: var(--accent-ink);
+  padding: 9px 14px; border-radius: 14px 14px 4px 14px;
+  max-width: min(560px, 88%); white-space: pre-wrap; overflow-wrap: anywhere;
+}
+.msg.agent { align-items: flex-start; }
+.speaker { display: flex; align-items: center; gap: 8px; font: 600 12px/1 var(--display); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-3); }
+.speaker .mark { width: 22px; height: 22px; border-radius: 5px; }
+.msg.agent p { margin: 0; max-width: 62ch; }
+.msg.agent p + p { margin-top: 6px; }
+
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip {
+  border: 1px solid var(--accent); color: var(--accent); background: var(--panel);
+  border-radius: 999px; padding: 6px 14px; font-size: 14px; font-weight: 500; line-height: 1.3; text-align: left;
+}
+.chip:hover:not(:disabled) { background: var(--accent-soft); }
+.chip:disabled { cursor: default; border-color: var(--line); color: var(--ink-3); background: transparent; }
+.chip.chosen:disabled { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); }
+.chip.try { border-style: dashed; }
+.chip .mono { font-size: 13px; }
+
+/* tool trace */
+.trace {
+  border-left: 2px solid var(--line); padding: 2px 0 2px 12px;
+  display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: var(--ink-2);
+}
+.trace .label { margin-bottom: 2px; }
+.trace li { list-style: none; display: flex; gap: 8px; align-items: baseline; }
+.trace ul { margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+.trace li::before { content: "✓"; color: var(--ok); font-weight: 600; }
+.trace li.run::before { content: "…"; color: var(--ink-3); }
+
+/* cards */
+.card {
+  width: 100%; background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
+  box-shadow: var(--shadow); overflow: hidden;
+}
+.card-head {
+  display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+  padding: 14px 16px 12px; border-bottom: 1px solid var(--line);
+}
+.card-head h3 { margin: 4px 0 0; font: 600 19px/1.2 var(--display); text-wrap: balance; }
+.card-head .item { margin-top: 4px; font-size: 13px; color: var(--ink-2); }
+.sev { background: var(--bad-soft); color: var(--bad); }
+.tbl-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+th, td { text-align: left; padding: 8px 16px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font: 600 11px/1.2 var(--display); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-3); background: var(--panel-2); }
+td:first-child { color: var(--ink-2); width: 30%; }
+td.v { font-family: var(--mono); font-size: 13px; font-variant-numeric: tabular-nums; }
+tr.diff td { background: var(--bad-soft); }
+tr.diff td.v.wms { color: var(--bad); font-weight: 500; }
+td.flag { width: 28px; text-align: center; padding-inline: 8px; font-family: var(--mono); }
+tr.diff td.flag { color: var(--bad); font-weight: 600; }
+tr.same td.flag { color: var(--ok); }
+.cause { padding: 12px 16px 14px; display: grid; gap: 8px; }
+.cause p { margin: 0; max-width: 68ch; }
+.kv { display: flex; gap: 8px; flex-wrap: wrap; font-size: 13px; color: var(--ink-2); }
+.kv b { font-weight: 600; color: var(--ink); }
+
+.action { display: flex; gap: 12px; align-items: flex-start; padding: 12px 16px; background: var(--ok-soft); border: 1px solid transparent; border-radius: 10px; width: 100%; }
+.action .tick { width: 22px; height: 22px; border-radius: 50%; background: var(--ok); color: var(--panel); display: grid; place-items: center; flex: none; font-size: 13px; font-weight: 700; }
+.action h4 { margin: 0; font: 600 15px/1.3 var(--body); }
+.action p { margin: 2px 0 0; font-size: 13.5px; color: var(--ink-2); }
+.action .sim { font-size: 11px; color: var(--ink-3); letter-spacing: .04em; }
+
+ol.steps { list-style: none; margin: 0; padding: 4px 0; counter-reset: s; }
+ol.steps li { counter-increment: s; border-bottom: 1px solid var(--line); }
+ol.steps li:last-child { border-bottom: 0; }
+ol.steps label { display: grid; grid-template-columns: 26px 22px 1fr; gap: 10px; align-items: start; padding: 11px 16px; cursor: pointer; }
+ol.steps label::before {
+  content: counter(s); font: 600 15px/22px var(--display); color: var(--ink-3); text-align: right;
+}
+ol.steps input { width: 18px; height: 18px; margin: 2px 0 0; accent-color: var(--ok); }
+ol.steps .txt { display: grid; gap: 4px; }
+ol.steps .who {
+  justify-self: start; font: 600 10.5px/1 var(--display); letter-spacing: .1em; text-transform: uppercase;
+  padding: 3px 6px; border-radius: 4px; background: var(--sunk); color: var(--ink-2);
+}
+ol.steps .who.you { background: var(--accent-soft); color: var(--accent); }
+ol.steps .where { font: 400 12.5px/1.4 var(--mono); color: var(--ink-3); overflow-wrap: anywhere; }
+ol.steps li.done .main-t { color: var(--ink-3); text-decoration: line-through; text-decoration-color: var(--ink-3); }
+
+.ticket { border-color: var(--warn); }
+.ticket .card-head { background: var(--warn-soft); border-bottom-color: transparent; }
+.ticket .card-head h3 { font-size: 17px; }
+.ticket .cause { font-size: 14px; }
+
+.typing { display: inline-flex; gap: 4px; padding: 10px 0 4px; }
+.typing span { width: 7px; height: 7px; border-radius: 50%; background: var(--ink-3); animation: blink 1.2s infinite ease-in-out; }
+.typing span:nth-child(2) { animation-delay: .15s; }
+.typing span:nth-child(3) { animation-delay: .3s; }
+@keyframes blink { 0%, 80%, 100% { opacity: .25; } 40% { opacity: 1; } }
+
+/* composer */
+.composer { padding: 12px 24px 16px; border-top: 1px solid var(--line); background: var(--panel); padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px)); }
+.composer form { max-width: 760px; margin: 0 auto; display: flex; gap: 8px; align-items: flex-end; }
+.composer textarea {
+  flex: 1; resize: none; min-height: 44px; max-height: 140px;
+  border: 1px solid var(--line); border-radius: 10px; background: var(--panel-2);
+  padding: 10px 12px; line-height: 1.4;
+}
+.composer textarea:focus { outline: 2px solid var(--accent); outline-offset: -1px; border-color: transparent; }
+.send {
+  height: 44px; padding: 0 18px; border: 0; border-radius: 10px;
+  background: var(--accent); color: var(--accent-ink); font-weight: 600;
+}
+.composer .hint { max-width: 760px; margin: 6px auto 0; font-size: 12px; color: var(--ink-3); }
+
+/* modal */
+.scrim {
+  position: fixed; inset: 0; background: rgba(10, 16, 22, .5);
+  display: grid; place-items: center; padding: 16px; z-index: 20;
+}
+.modal {
+  width: min(620px, 100%); max-height: calc(100% - 32px); overflow-y: auto;
+  background: var(--panel); border-radius: 12px; box-shadow: var(--shadow); border: 1px solid var(--line);
+}
+.modal header { padding: 16px 20px 12px; border-bottom: 1px solid var(--line); }
+.modal header h2 { margin: 0; font: 600 21px/1.2 var(--display); }
+.modal header p { margin: 4px 0 0; font-size: 13px; color: var(--ink-2); }
+.modal .body { padding: 16px 20px; display: grid; gap: 14px; }
+.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.field { display: grid; gap: 6px; }
+.field label { font: 600 11px/1 var(--display); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-3); }
+.field select, .field textarea, .field input {
+  border: 1px solid var(--line); border-radius: 8px; background: var(--panel-2); padding: 8px 10px; width: 100%;
+}
+.field textarea { min-height: 200px; resize: vertical; font: 13px/1.5 var(--mono); }
+.modal footer { padding: 12px 20px 16px; display: flex; gap: 8px; justify-content: flex-end; align-items: center; flex-wrap: wrap; }
+.modal footer .note { margin-right: auto; font-size: 12px; color: var(--ink-3); }
+.btn-2 { border: 1px solid var(--line); background: var(--panel); border-radius: 8px; padding: 8px 14px; }
+.btn-1 { border: 0; background: var(--accent); color: var(--accent-ink); border-radius: 8px; padding: 9px 16px; font-weight: 600; }
+.btn-warn { background: var(--warn); color: var(--panel); }
+
+.guide table td:first-child { width: auto; }
+.guide .body > p { margin: 0; font-size: 14px; color: var(--ink-2); }
+
+/* ---------- Responsive ---------- */
+@media (max-width: 820px) {
+  .main { grid-template-columns: 1fr; }
+  .side {
+    position: fixed; z-index: 15; top: 0; bottom: 0; left: 0; width: min(320px, 86vw);
+    padding-top: env(safe-area-inset-top, 0px);
+    transform: translateX(-102%); transition: transform .2s ease; box-shadow: var(--shadow);
+  }
+  .side.open { transform: none; }
+  .hist-btn { display: inline-block; }
+  .systems .sys .mono { display: none; }
+  .thread, .chat-head, .composer { padding-left: 16px; padding-right: 16px; }
+}
+@media (max-width: 520px) {
+  .systems { display: none; }
+  .brand small { display: none; }
+  .row2 { grid-template-columns: 1fr; }
+  .top { gap: 10px; }
+  .hist-btn { margin-left: auto; }
+}
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="proto" role="note">
+    <b>Prototype</b>
+    <span>Mock orders and scripted answers. Not connected to SAP or Deposco.</span>
+    <button type="button" id="guide-open">Demo guide</button>
+  </div>
+
+  <header class="top">
+    <button type="button" class="hist-btn" id="hist-btn" aria-controls="side" aria-expanded="false">Issues</button>
+    <div class="brand">
+      <div class="mark" aria-hidden="true">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M3 8l9-5 9 5v8l-9 5-9-5z" fill="none"/><path d="M3 8l9 5 9-5M12 13v8" fill="none"/></svg>
+      </div>
+      <div>
+        <h1>Warehouse Order Assistant</h1>
+        <small>Diagnoses orders stuck between SAP and Deposco</small>
+      </div>
+    </div>
+    <div class="systems" aria-label="System connections">
+      <span class="sys"><i></i>SAP <span class="mono" id="sync-sap">synced 09:58</span></span>
+      <span class="sys"><i></i>Deposco <span class="mono" id="sync-dep">synced 09:59</span></span>
+    </div>
+  </header>
+
+  <div class="main">
+    <aside class="side" id="side" aria-label="Your issues">
+      <div class="side-head">
+        <button type="button" class="new-btn" id="new-btn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14" fill="none"/></svg>
+          New issue
+        </button>
+        <span class="label">Your recent issues</span>
+      </div>
+      <ul class="convs" id="convs"></ul>
+    </aside>
+
+    <section class="chat" aria-label="Conversation">
+      <div class="chat-head" id="chat-head"></div>
+      <div class="thread" id="thread" aria-live="polite"><div class="thread-inner" id="thread-inner"></div></div>
+      <div class="composer">
+        <form id="composer">
+          <textarea id="input" aria-label="Describe the problem" rows="1" placeholder="Describe the problem or type an order number, e.g. SO-100437"></textarea>
+          <button class="send" type="submit">Send</button>
+        </form>
+        <div class="hint">Enter to send · Shift+Enter for a new line</div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<div class="scrim" id="esc-scrim" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="esc-title">
+    <header>
+      <h2 id="esc-title">Escalate to the system owner</h2>
+      <p>I've drafted the ticket from this conversation. Check it, add anything you saw, and send.</p>
+    </header>
+    <div class="body">
+      <div class="row2">
+        <div class="field">
+          <label for="esc-team">Send to</label>
+          <select id="esc-team">
+            <option>SAP order support</option>
+            <option>Deposco admin</option>
+            <option>Quality team (inventory holds)</option>
+            <option>Shift lead</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="esc-pri">Priority</label>
+          <select id="esc-pri">
+            <option value="High">High · ships today</option>
+            <option value="Normal">Normal</option>
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <label for="esc-body">Ticket details</label>
+        <textarea id="esc-body"></textarea>
+      </div>
+    </div>
+    <footer>
+      <span class="note">Prototype: nothing is sent.</span>
+      <button type="button" class="btn-2" id="esc-cancel">Cancel</button>
+      <button type="button" class="btn-1 btn-warn" id="esc-send">Send escalation</button>
+    </footer>
+  </div>
+</div>
+
+<div class="scrim guide" id="guide-scrim" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="guide-title">
+    <header>
+      <h2 id="guide-title">Demo guide</h2>
+      <p>Five mock orders, one per common SAP ↔ Deposco mismatch. Type a phrase or tap a suggestion.</p>
+    </header>
+    <div class="body">
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Order</th><th>Problem on the floor</th><th>Root cause</th></tr></thead>
+          <tbody id="guide-rows"></tbody>
+        </table>
+      </div>
+      <p>Describe the problem without an order number to see the clarifying questions. The inventory hold scenario (SO-100437) needs the Quality team, so it shows the escalation flow.</p>
+    </div>
+    <footer><button type="button" class="btn-1" id="guide-close">Close</button></footer>
+  </div>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  const reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const hhmm = (d = new Date()) => String(d.getHours()).padStart(2, "0") + ":" + String(d.getMinutes()).padStart(2, "0");
+
+  // ---------- Mock data (fictional) ----------
+  const ORDERS = {
+    "SO-100412": { no: "SO-100412", customer: "Brightside Boutique", scenario: "missing", ship: "Ships today · 15:00 UPS pickup", today: true },
+    "SO-100437": { no: "SO-100437", customer: "Little Harbor Kids Co.", scenario: "short", ship: "Ships today · 15:00 UPS pickup", today: true },
+    "SO-100455": { no: "SO-100455", customer: "Maple & Moss Baby", scenario: "uom", ship: "Ships 2 Oct", today: false },
+    "SO-100468": { no: "SO-100468", customer: "Northstar Department Stores", scenario: "changed", ship: "Ships today · 16:30 LTL pickup", today: true },
+    "SO-100479": { no: "SO-100479", customer: "Tiny Trails Outfitters", scenario: "address", ship: "Ships today · 15:00 UPS pickup", today: true },
+    // history only
+    "SO-100391": { no: "SO-100391", customer: "Pebble Lane Kids", scenario: "address", ship: "Shipped 30 Sep", today: false },
+    "SO-100388": { no: "SO-100388", customer: "Cedar & Clover Baby", scenario: "short", ship: "Ships 2 Oct", today: false },
+    "SO-100402": { no: "SO-100402", customer: "Riverbend Family Stores", scenario: "uom", ship: "Shipped 29 Sep", today: false }
+  };
+
+  const LABELS = {
+    missing: "Order isn't in Deposco",
+    short: "Order won't allocate",
+    uom: "Pick quantity looks wrong",
+    changed: "Packing list doesn't match the order",
+    address: "Shipping label won't print"
+  };
+  const DEMO = { missing: "SO-100412", short: "SO-100437", uom: "SO-100455", changed: "SO-100468", address: "SO-100479" };
+
+  const PATTERNS = {
+    address: /label|address|carrier|\bups\b|fedex|usps|ship.?to|\bzip\b|postal|validation|rate/i,
+    uom: /\buom\b|unit of measure|multi-?pack|\d-?packs?\b|case pack|eaches|\bpk\b|qty.*(wrong|off)|quantity.*(wrong|off)|wrong (qty|quantity)|units? (don'?t|do not) match|packs? vs/i,
+    changed: /chang|added|extra (line|item)|packing (list|slip)|doesn'?t match the order|different (qty|quantity)|amend|updated/i,
+    missing: /not (in|showing|show(ing)? up|appearing|found)|can'?t find|cannot find|missing|no order|doesn'?t (show|appear|exist)|isn'?t in|didn'?t drop|never (came|arrived|dropped)/i,
+    short: /allocat|short|not enough|inventory|stock|on ?hand|available|won'?t release|wave/i
+  };
+  function detect(text) {
+    let best = null, n = 0;
+    for (const key of Object.keys(PATTERNS)) {
+      const m = text.match(new RegExp(PATTERNS[key].source, "gi"));
+      if (m && m.length > n) { best = key; n = m.length; }
+    }
+    return best;
+  }
+  function findOrderNo(text) {
+    const m = text.match(/\bSO[-\s]?(\d{6})\b/i) || text.match(/\b(1\d{5})\b/);
+    return m ? "SO-" + m[1] : null;
+  }
+
+  // ---------- Scenarios ----------
+  const FIXED = ["Yes, it's fixed", "No, escalate"];
+
+  const SCEN = {
+    missing: {
+      team: "SAP order support",
+      ask: "Please reprocess outbound IDoc 0000048213 so the order reaches Deposco.",
+      async run(c, o) {
+        await trace(c, [
+          `Found ${o.no} in SAP: delivery 80041277, created today 07:58`,
+          "Searched Deposco outbound orders: no match",
+          "Checked the SAP → Deposco interface log"
+        ]);
+        const urg = await ask(c, `I found ${o.no} in SAP, but Deposco never received it. Is this order on today's truck?`, ["Yes, ships today", "No, later this week"], "urgency");
+        c.urgent = /yes/i.test(urg);
+        await post(c, {
+          kind: "diagnosis", title: "The order never reached Deposco", sev: "Blocked",
+          item: `${o.customer} · 2 lines · 84 EA`,
+          rows: [
+            ["Order status", "Released · delivery 80041277", "Not found", true],
+            ["Outbound IDoc", "0000048213 · status 51 (error)", "Nothing received", true],
+            ["Error text", "Ship-to 300218 locked by another user", "—", true],
+            ["Customer", o.customer, "—", false]
+          ],
+          cause: "SAP tried to send the order at 07:59 while someone was editing the customer record. The send failed and SAP doesn't retry it on its own. The lock cleared at 08:31, so a resend will work.",
+          owner: "Shift lead (SAP access) or SAP order support"
+        }, 900);
+        await post(c, {
+          kind: "steps", title: "Get the order into Deposco",
+          items: [
+            { who: "Shift lead", text: "Resend IDoc 0000048213 from the SAP interface monitor.", where: "SAP › BD87 › Status 51 › Reprocess" },
+            { who: "You", text: "Wait 5 minutes, then search Deposco for the order.", where: `Deposco › Orders › Outbound › search ${o.no}` },
+            { who: "You", text: "When it shows as New, add it to the next wave and pick as normal." }
+          ]
+        });
+        if (c.urgent) await say(c, "The UPS pickup is at 15:00. If the order isn't in Deposco by 14:00, escalate and the SAP team will push it through by hand.");
+        await fixcheck(c);
+      }
+    },
+
+    short: {
+      team: "Quality team (inventory holds)",
+      ask: "Please release the inspection hold on 36 EA of 2210-3M-PNK in QA-HOLD-01 (PO 4500082231) so the order can allocate.",
+      async run(c, o) {
+        await trace(c, [`Loaded ${o.no}: 3 lines, wave W-2287`]);
+        await ask(c, "Which line won't allocate?", ["Line 10 · 2210-3M-PNK", "Line 20 · 2214-6M-WHT", "Not sure"], "line");
+        const bin = await ask(c, "Have you checked the pick location, A-14-03?", ["Bin is empty", "There's stock in the bin", "Haven't checked"], "bin");
+        await trace(c, [
+          "Compared SAP stock with Deposco available inventory",
+          "Checked Deposco locations and hold status for 2210-3M-PNK",
+          "Found receipt for PO 4500082231 on 28 Sep"
+        ]);
+        await post(c, {
+          kind: "diagnosis", title: "Stock is on an inspection hold in Deposco", sev: "Can't allocate",
+          item: "2210-3M-PNK · Ruffle bodysuit, pink, 3M · line 10",
+          rows: [
+            ["Ordered", "30 EA", "30 EA · 12 allocated", true],
+            ["On hand", "48 EA", "48 EA", false],
+            ["Available to allocate", "48 EA unrestricted", "12 EA", true],
+            ["Where it is", "Plant 1000 · SLoc 0001", "A-14-03: 12 EA\nQA-HOLD-01: 36 EA", true],
+            ["Hold status", "None", "Inspection hold since 28 Sep", true]
+          ],
+          cause: "Receiving put 36 units into inspection on 28 Sep. SAP posted them as unrestricted stock, but Deposco still has them on hold, so it can only allocate the 12 units in the pick face.",
+          owner: "Quality team"
+        }, 900);
+        if (/stock/i.test(bin)) await say(c, "You said there's stock in A-14-03. Deposco expects 12 EA there. If you count more, record a cycle count once this is fixed.");
+        await post(c, {
+          kind: "steps", title: "Release the held stock",
+          items: [
+            { who: "You", text: "Go to QA-HOLD-01 and confirm 6 cartons of 2210-3M-PNK (6 × 6 EA)." },
+            { who: "You", text: "Check each carton for an inspection tag. A green tag means it passed." },
+            { who: "Quality team", text: "Release the hold in Deposco. Warehouse users can't release inspection holds.", where: "Deposco › Inventory › Holds › QA-HOLD-01" },
+            { who: "You", text: "After the release, re-allocate the order from the wave.", where: "Deposco › Waves › W-2287 › Re-allocate" }
+          ]
+        });
+        await say(c, "Step 3 needs the Quality team. If the cartons have green tags, escalate now and I'll send them the details.");
+        await fixcheck(c);
+      }
+    },
+
+    uom: {
+      team: "Deposco admin",
+      ask: "Item sync for 3305-NB-MLT failed on 29 Sep. Please check why the nightly item master job failed so other new pack units aren't affected.",
+      async run(c, o) {
+        await trace(c, [`Loaded ${o.no}: 1 line, 3305-NB-MLT`]);
+        await ask(c, "What does the pick screen tell you to pick?", ["10 each", "10 packs", "Something else"], "seen");
+        await trace(c, [
+          "Compared order quantity and unit in SAP and Deposco",
+          "Checked item master sync history for 3305-NB-MLT"
+        ]);
+        await post(c, {
+          kind: "diagnosis", title: "Unit of measure mismatch", sev: "Will ship short",
+          item: "3305-NB-MLT · Bodysuit 5-pack, newborn, assorted",
+          rows: [
+            ["Order quantity", "10 PK", "10 EA", true],
+            ["Pack size", "1 PK = 5 EA", "No PK unit set up", true],
+            ["Pieces to ship", "50 EA", "10 EA", true],
+            ["Item master sync", "Changed 29 Sep 05:40", "Sync failed 29 Sep 06:02", true]
+          ],
+          cause: "The pack unit was added to this item in SAP on 29 Sep, but the nightly item sync to Deposco failed. Deposco reads 10 packs as 10 single pieces, so the order would ship 40 pieces short.",
+          owner: "Deposco admin (item master)"
+        }, 900);
+        await post(c, {
+          kind: "action", title: "I re-ran the item sync for 3305-NB-MLT",
+          detail: `Sent at ${hhmm()}. Deposco now shows 1 PK = 5 EA.`
+        }, 1100);
+        await post(c, {
+          kind: "steps", title: "Re-allocate with the right quantity",
+          items: [
+            { who: "You", text: "Stop picking this line. If you already picked 10 single pieces, keep them at the pack station." },
+            { who: "You", text: "Unallocate the order so Deposco drops the old pick.", where: `Deposco › Orders › ${o.no} › Unallocate` },
+            { who: "You", text: "Allocate it again. The pick should now read 10 PK (50 EA)." }
+          ]
+        });
+        await fixcheck(c);
+      }
+    },
+
+    changed: {
+      team: "SAP order support",
+      ask: "Order changed in SAP after wave release; Deposco rejected the change. Please resend ORDCHG once the order is removed from wave W-2291.",
+      async run(c, o) {
+        await trace(c, [
+          `Loaded ${o.no} in SAP: changed 30 Sep 15:20 by customer service`,
+          `Loaded ${o.no} in Deposco: released to wave W-2291 on 30 Sep 11:02`
+        ]);
+        const stage = await ask(c, "How far along is the order?", ["Picking", "Picked, at the pack station", "Already packed"], "stage");
+        await trace(c, ["Checked change messages for this order"]);
+        await post(c, {
+          kind: "diagnosis", title: "Deposco has an old version of the order", sev: "Blocked at pack",
+          item: `${o.customer} · 3 lines in SAP, 2 in Deposco`,
+          rows: [
+            ["Line 10 · 2230-12M-NVY", "36 EA", "24 EA", true],
+            ["Line 20 · 2231-12M-GRY", "24 EA", "24 EA", false],
+            ["Line 30 · 2240-18M-RED", "12 EA (added)", "Not on order", true],
+            ["Change message", "Sent 30 Sep 15:21", "Rejected: order in active wave", true]
+          ],
+          cause: "Customer service increased line 10 and added line 30 after the order was released to a wave. Deposco rejects changes to orders in an active wave, so the update never applied.",
+          owner: "You, with the assistant resending the change"
+        }, 900);
+        if (/packed/i.test(stage)) await say(c, "Since it's already packed, don't unpack it. Keep the carton open and add the extra units at the pack station after step 4.");
+        await post(c, {
+          kind: "steps", title: "Apply the customer's change",
+          items: [
+            { who: "You", text: "Keep what's already picked together. Don't close or ship the order." },
+            { who: "You", text: "Remove the order from the wave.", where: `Deposco › Waves › W-2291 › ${o.no} › Remove from wave` },
+            { who: "Assistant", text: "Once it's out of the wave, tell me and I'll resend the change from SAP." },
+            { who: "You", text: "Add the order to a new wave and pick the extra 12 EA on line 10 and 12 EA on line 30." }
+          ]
+        });
+        await fixcheck(c);
+      }
+    },
+
+    address: {
+      team: "Deposco admin",
+      ask: "Ship-to postal code was corrected in SAP after the order reached Deposco. Fixed by hand this time; please look at why address changes don't sync.",
+      async run(c, o) {
+        await trace(c, [`Loaded shipment for ${o.no} in Deposco: UPS Ground, 3 cartons`]);
+        const err = await ask(c, "What does the label error say?", ["Address validation failed", "Invalid service or account", "No error, it just won't print"], "err");
+        await trace(c, ["Read the carrier response for this shipment", "Compared ship-to address in SAP and Deposco"]);
+        if (!/address/i.test(err)) await say(c, `Deposco logged an address validation error from UPS at ${hhmm(new Date(Date.now() - 6 * 60000))}. That's what is blocking the label.`);
+        await post(c, {
+          kind: "diagnosis", title: "Ship-to postal code is out of date in Deposco", sev: "Blocked at label",
+          item: `${o.customer} · Distribution center`,
+          rows: [
+            ["Street", "4100 Commerce Pkwy, Dock 6", "4100 Commerce Pkwy, Dock 6", false],
+            ["City / State", "Greenville, SC", "Greenville, SC", false],
+            ["Postal code", "29607", "29067", true],
+            ["Carrier response", "—", "Postal code does not match city", true]
+          ],
+          cause: "Customer service fixed a typo in the postal code in SAP on 30 Sep. Deposco copied the address when the order arrived on 29 Sep, so it still has the old one. SAP doesn't resend addresses for orders already in Deposco.",
+          owner: "You can fix this one"
+        }, 900);
+        await post(c, {
+          kind: "steps", title: "Fix the address and print the label",
+          items: [
+            { who: "You", text: "Open the shipment and edit the ship-to address.", where: `Deposco › Shipping › ${o.no} › Edit ship-to` },
+            { who: "You", text: "Change the postal code to 29607. Leave everything else as it is." },
+            { who: "You", text: "Select Rate & Label again. The labels should print." }
+          ]
+        });
+        await say(c, "I've logged this so the system owners can see how often address changes don't sync.");
+        await fixcheck(c);
+      }
+    }
+  };
+
+  // ---------- State ----------
+  let convs = [];
+  let active = null;
+  let seq = 1;
+  let ticketNo = 2409;
+
+  function newConv(opts = {}) {
+    const c = {
+      id: "c" + seq++, order: null, symptom: null, status: "open", messages: [],
+      pending: null, typing: false, busy: false, when: opts.when || "Today " + hhmm(),
+      auto: opts.auto || null, first: null, diag: null, urgent: false, stamp: opts.stamp ?? Date.now()
+    };
+    convs.push(c);
+    return c;
+  }
+
+  const wait = (c, ms) => (c.auto ? Promise.resolve() : new Promise(r => setTimeout(r, reduceMotion ? ms / 3 : ms)));
+
+  async function post(c, msg, ms = 650) {
+    if (c.halt) return;
+    if (!c.auto) { c.typing = true; draw(c); }
+    await wait(c, ms);
+    c.typing = false;
+    if (c.halt) { draw(c); return; }
+    msg.role = msg.role || "agent";
+    if (msg.kind === "diagnosis") c.diag = msg;
+    c.messages.push(msg);
+    c.stamp = Date.now();
+    draw(c, true);
+  }
+  const say = (c, text, ms) => post(c, { kind: "text", text }, ms);
+
+  async function trace(c, items) {
+    if (c.halt) return;
+    const msg = { role: "agent", kind: "trace", items: [] };
+    c.messages.push(msg);
+    for (const it of items) {
+      msg.items.push({ text: it, run: !c.auto });
+      draw(c, true);
+      await wait(c, 450);
+      msg.items[msg.items.length - 1].run = false;
+    }
+    draw(c, true);
+  }
+
+  function ask(c, text, options, key) {
+    const msg = { role: "agent", kind: "question", text, options, answered: null, key };
+    return new Promise(resolve => {
+      const go = () => {
+        if (c.halt) return;
+        c.messages.push(msg);
+        c.pending = { msg, resolve };
+        draw(c, true);
+        if (c.auto && key in c.auto) userSays(c, c.auto[key]);
+      };
+      if (c.auto) go();
+      else { c.typing = true; draw(c); wait(c, 600).then(() => { c.typing = false; go(); }); }
+    });
+  }
+
+  function userSays(c, text) {
+    c.messages.push({ role: "user", kind: "text", text });
+    c.stamp = Date.now();
+    if (c.pending) {
+      const { msg, resolve } = c.pending;
+      const hit = msg.options.find(o => o.toLowerCase() === text.toLowerCase())
+        || msg.options.find(o => text.toLowerCase().includes(o.toLowerCase().split(/[ ,·]/)[0]));
+      msg.answered = hit || text;
+      c.pending = null;
+      draw(c, true);
+      resolve(text);
+      return;
+    }
+    draw(c, true);
+    if (!c.first) c.first = text;
+    if (c.status !== "open") {
+      c.messages.push({ role: "agent", kind: "suggest", text: "This issue is closed. Start a new one for a different order.", options: [{ label: "New issue", action: "new" }] });
+      draw(c, true);
+      return;
+    }
+    if (c.busy) { say(c, "One moment, I'm still checking this order."); return; }
+    c.busy = true;
+    intake(c, text).finally(() => { c.busy = false; });
+  }
+
+  async function intake(c, text) {
+    let no = findOrderNo(text);
+    let sym = detect(text);
+    if (!no && !sym) {
+      const ans = await ask(c, "I can help when an order won't drop, allocate, pick, pack or ship. Which of these is closest?", Object.values(LABELS), "symptom");
+      sym = Object.keys(LABELS).find(k => LABELS[k] === ans) || detect(ans);
+      no = findOrderNo(ans);
+    }
+    if (sym) c.symptom = sym;
+    let prompt = sym ? `Got it: ${LABELS[sym].toLowerCase()}. Which order is it? Type or scan the number on the pick ticket.` : "Which order is it? Type or scan the number on the pick ticket.";
+    while (!no || !ORDERS[no]) {
+      if (no && !ORDERS[no]) {
+        await say(c, `I can't find ${no} in SAP or Deposco. Check the number on the pick ticket and try again.`);
+        prompt = "Which order is it?";
+      }
+      const opts = sym ? [DEMO[sym]] : Object.values(DEMO);
+      const ans = await ask(c, prompt, opts, "order");
+      no = findOrderNo(ans);
+      if (!no) prompt = "I need the order number to look it up. It starts with SO-, like SO-100437.";
+    }
+    const o = ORDERS[no];
+    c.order = o;
+    drawSide();
+    drawHead();
+    if (c.symptom && c.symptom !== o.scenario) {
+      await say(c, `Thanks. I checked ${o.no}, and the real problem is a little different from what it looks like on the floor.`);
+    }
+    await SCEN[o.scenario].run(c, o);
+  }
+
+  async function fixcheck(c) {
+    const ans = await ask(c, "Work through the steps and tick them off as you go. Did this fix it?", FIXED, "fixed");
+    if (/^y/i.test(ans) || /fixed|works|done/i.test(ans) && !/not|no\b/i.test(ans)) {
+      await say(c, `I've marked ${c.order.no} as resolved and added it to the fix log, so the SAP and Deposco owners can see how often this happens.`);
+      c.status = "resolved";
+      draw(c);
+    } else if (c.auto) {
+      createTicket(c, SCEN[c.order.scenario].team, "Normal");
+    } else {
+      openEscalate(c);
+    }
+  }
+
+  function createTicket(c, team, priority) {
+    if (c.pending && c.pending.msg.key === "fixed") {
+      c.pending.msg.answered = "No, escalate";
+      c.pending = null;
+    }
+    const id = "WH-" + ticketNo++;
+    c.status = "escalated";
+    c.halt = true;
+    c.typing = false;
+    c.messages.push({
+      role: "agent", kind: "ticket", id, team, priority,
+      text: priority === "High" ? "Marked high priority because it ships today. They usually reply within 30 minutes." : "They usually reply within 4 hours."
+    });
+    c.stamp = Date.now();
+    draw(c, true);
+    drawSide();
+  }
+
+  // ---------- Rendering ----------
+  const $ = id => document.getElementById(id);
+  const threadEl = $("thread"), innerEl = $("thread-inner");
+
+  function draw(c, scroll) {
+    if (c !== active) { drawSide(); return; }
+    drawThread(scroll);
+    drawSide();
+  }
+
+  function pillHTML(status) {
+    const t = { open: "In progress", resolved: "Resolved", escalated: "Escalated" }[status];
+    return `<span class="pill ${status}">${t}</span>`;
+  }
+
+  function drawSide() {
+    const list = [...convs].sort((a, b) => b.stamp - a.stamp);
+    $("convs").innerHTML = list.map(c => {
+      const no = c.order ? c.order.no : "New issue";
+      const what = c.order ? LABELS[c.order.scenario] : (c.first ? c.first : "Describe the problem to start");
+      return `<li><button type="button" class="conv" data-conv="${c.id}" aria-current="${c === active}">
+        <span class="no">${esc(no)}</span>${pillHTML(c.status)}
+        <span class="what">${esc(what.length > 70 ? what.slice(0, 68) + "…" : what)}</span>
+        <span class="when">${esc(c.when)}${c.order ? " · " + esc(c.order.customer) : ""}</span>
+      </button></li>`;
+    }).join("");
+  }
+
+  function drawHead() {
+    const c = active, h = $("chat-head");
+    if (!c.order) { h.innerHTML = `<span class="empty">New issue · no order selected yet</span>`; return; }
+    const o = c.order;
+    h.innerHTML = `<span class="ord">${esc(o.no)}</span>
+      <span class="cust">${esc(o.customer)}</span>
+      <span class="ship ${o.today ? "today" : ""}">${esc(o.ship)}</span>
+      ${pillHTML(c.status)}
+      <span class="spacer"></span>
+      ${c.status === "open" && c.diag ? `<button type="button" class="esc-btn" data-action="escalate">Escalate</button>` : ""}`;
+  }
+
+  function drawThread(scroll) {
+    const c = active;
+    let prevRole = null;
+    const parts = c.messages.map((m, i) => {
+      const head = m.role === "agent" && prevRole !== "agent"
+        ? `<div class="speaker"><span class="mark" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linejoin="round"><path d="M3 8l9-5 9 5v8l-9 5-9-5z" fill="none"/></svg></span>Assistant</div>` : "";
+      prevRole = m.role;
+      if (m.role === "user") return `<div class="msg user"><div class="bubble">${esc(m.text)}</div></div>`;
+      return `<div class="msg agent">${head}${renderAgent(m, i, c)}</div>`;
+    });
+    if (c.typing) parts.push(`<div class="msg agent">${prevRole !== "agent" ? `<div class="speaker">Assistant</div>` : ""}<div class="typing" aria-label="Assistant is typing"><span></span><span></span><span></span></div></div>`);
+    innerEl.innerHTML = parts.join("");
+    drawHead();
+    if (scroll) threadEl.scrollTop = threadEl.scrollHeight;
+  }
+
+  function renderAgent(m, i, c) {
+    switch (m.kind) {
+      case "text":
+        return `<p>${esc(m.text)}</p>`;
+      case "suggest":
+        return `<p>${esc(m.text)}</p><div class="chips">${m.options.map(o =>
+          o.action ? `<button type="button" class="chip" data-action="${o.action}">${esc(o.label)}</button>`
+                   : `<button type="button" class="chip try" data-say="${esc(o.say)}">${esc(o.label)}</button>`).join("")}</div>`;
+      case "question": {
+        const live = c.pending && c.pending.msg === m;
+        return `<p>${esc(m.text)}</p><div class="chips">${m.options.map(o => {
+          const chosen = m.answered === o;
+          const label = /^SO-\d{6}$/.test(o) ? `<span class="mono">${esc(o)}</span>` : esc(o);
+          return `<button type="button" class="chip ${chosen ? "chosen" : ""}" data-say="${esc(o)}" ${live ? "" : "disabled"}>${label}</button>`;
+        }).join("")}</div>`;
+      }
+      case "trace":
+        return `<div class="trace"><span class="label">What I checked</span><ul>${m.items.map(t =>
+          `<li class="${t.run ? "run" : ""}">${esc(t.text)}</li>`).join("")}</ul></div>`;
+      case "diagnosis":
+        return `<div class="card">
+          <div class="card-head">
+            <div><span class="label">Diagnosis</span><h3>${esc(m.title)}</h3><div class="item">${esc(m.item)}</div></div>
+            <span class="pill sev">${esc(m.sev)}</span>
+          </div>
+          <div class="tbl-wrap"><table>
+            <thead><tr><th scope="col">Field</th><th scope="col">SAP</th><th scope="col">Deposco</th><th scope="col"><span hidden>Match</span></th></tr></thead>
+            <tbody>${m.rows.map(r => `<tr class="${r[3] ? "diff" : "same"}">
+              <td>${esc(r[0])}</td><td class="v">${esc(r[1]).replace(/\n/g, "<br>")}</td><td class="v wms">${esc(r[2]).replace(/\n/g, "<br>")}</td>
+              <td class="flag" aria-label="${r[3] ? "Mismatch" : "Match"}">${r[3] ? "≠" : "="}</td></tr>`).join("")}</tbody>
+          </table></div>
+          <div class="cause"><span class="label">Why it happened</span><p>${esc(m.cause)}</p>
+            <div class="kv"><span>Who can fix it:</span><b>${esc(m.owner)}</b></div></div>
+        </div>`;
+      case "action":
+        return `<div class="action"><span class="tick" aria-hidden="true">✓</span><div>
+          <h4>${esc(m.title)}</h4><p>${esc(m.detail)}</p><span class="sim">Simulated assistant action</span></div></div>`;
+      case "steps":
+        return `<div class="card"><div class="card-head"><div><span class="label">Steps to fix</span><h3>${esc(m.title)}</h3></div></div>
+          <ol class="steps">${m.items.map((s, si) => {
+            const id = `chk-${c.id}-${i}-${si}`;
+            return `<li class="${s.done ? "done" : ""}"><label for="${id}">
+              <input type="checkbox" id="${id}" data-msg="${i}" data-step="${si}" ${s.done ? "checked" : ""}>
+              <span class="txt"><span class="who ${s.who === "You" ? "you" : ""}">${esc(s.who)}</span>
+              <span class="main-t">${esc(s.text)}</span>${s.where ? `<span class="where">${esc(s.where)}</span>` : ""}</span>
+            </label></li>`;
+          }).join("")}</ol></div>`;
+      case "ticket":
+        return `<div class="card ticket"><div class="card-head"><div><span class="label">Escalated · <span class="mono">${esc(m.id)}</span></span>
+          <h3>Sent to ${esc(m.team)}</h3></div>${pillHTML("escalated")}</div>
+          <div class="cause"><p>${esc(m.text)} Their reply will appear in this conversation.</p>
+          <div class="kv"><span>Priority:</span><b>${esc(m.priority)}</b><span>· Includes the diagnosis and the steps you ticked.</span></div></div></div>`;
+    }
+    return "";
+  }
+
+  // ---------- Escalation ----------
+  let escConv = null;
+  function openEscalate(c) {
+    escConv = c;
+    const o = c.order, d = c.diag, sc = SCEN[o.scenario];
+    const steps = c.messages.filter(m => m.kind === "steps").flatMap(m => m.items);
+    const done = steps.filter(s => s.done).map(s => "  [x] " + s.text);
+    const notDone = steps.filter(s => !s.done).map(s => "  [ ] " + s.text);
+    $("esc-team").value = sc.team;
+    $("esc-pri").value = o.today ? "High" : "Normal";
+    $("esc-body").value =
+`Order: ${o.no} (${o.customer})
+Ship date: ${o.ship}
+Reported by: Warehouse, day shift
+
+What the warehouse saw:
+  "${c.first || LABELS[o.scenario]}"
+
+Diagnosis: ${d ? d.title : LABELS[o.scenario]}
+${d ? d.cause : ""}
+
+Steps:
+${[...done, ...notDone].join("\n") || "  None yet"}
+
+Request:
+  ${sc.ask}`;
+    $("esc-scrim").hidden = false;
+    $("esc-body").focus();
+  }
+  function closeEscalate() { $("esc-scrim").hidden = true; }
+
+  $("esc-send").addEventListener("click", () => {
+    const c = escConv; closeEscalate();
+    createTicket(c, $("esc-team").value, $("esc-pri").value);
+  });
+  $("esc-cancel").addEventListener("click", () => {
+    const c = escConv; closeEscalate();
+    if (c.pending) return;
+    if (c.status === "open") say(c, "Not sent. Select Escalate at the top when you're ready.", 300);
+  });
+
+  // ---------- Events ----------
+  function select(c) {
+    active = c;
+    drawThread(true);
+    drawSide();
+    toggleSide(false);
+  }
+
+  function startNew() {
+    const c = newConv();
+    c.messages.push({
+      role: "agent", kind: "suggest",
+      text: "Tell me what's wrong with the order. Include the order number if you have it. It's on the pick ticket, for example SO-100437.",
+      options: [
+        { label: "SO-100437 won't allocate", say: "SO-100437 won't allocate" },
+        { label: "Can't find SO-100412 in Deposco", say: "Can't find SO-100412 in Deposco" },
+        { label: "Pick qty looks wrong on SO-100455", say: "Pick qty looks wrong on SO-100455, it says 10 each" },
+        { label: "Packing slip doesn't match SO-100468", say: "Packing slip doesn't match SO-100468" },
+        { label: "Label won't print for SO-100479", say: "Label won't print for SO-100479" },
+        { label: "Label won't print (no order number)", say: "The shipping label won't print" }
+      ]
+    });
+    select(c);
+    $("input").focus({ preventScroll: true });
+  }
+
+  document.addEventListener("click", e => {
+    const t = e.target.closest("[data-say],[data-action],[data-conv]");
+    if (!t || t.disabled) return;
+    if (t.dataset.conv) { select(convs.find(c => c.id === t.dataset.conv)); return; }
+    if (t.dataset.action === "new") { startNew(); return; }
+    if (t.dataset.action === "escalate") { openEscalate(active); return; }
+    if (t.dataset.say) userSays(active, t.dataset.say);
+  });
+
+  innerEl.addEventListener("change", e => {
+    const t = e.target;
+    if (t.type !== "checkbox") return;
+    const m = active.messages[+t.dataset.msg];
+    m.items[+t.dataset.step].done = t.checked;
+    t.closest("li").classList.toggle("done", t.checked);
+  });
+
+  const input = $("input");
+  $("composer").addEventListener("submit", e => {
+    e.preventDefault();
+    const v = input.value.trim();
+    if (!v) return;
+    input.value = ""; grow();
+    userSays(active, v);
+  });
+  input.addEventListener("keydown", e => {
+    if (e.key === "Enter" && !e.shiftKey && !e.isComposing) { e.preventDefault(); $("composer").requestSubmit(); }
+  });
+  function grow() { input.style.height = "auto"; input.style.height = Math.min(input.scrollHeight, 140) + "px"; }
+  input.addEventListener("input", grow);
+
+  $("new-btn").addEventListener("click", startNew);
+
+  function toggleSide(open) {
+    $("side").classList.toggle("open", open);
+    $("hist-btn").setAttribute("aria-expanded", String(open));
+  }
+  $("hist-btn").addEventListener("click", () => toggleSide(!$("side").classList.contains("open")));
+
+  $("sync-sap").textContent = "synced " + hhmm(new Date(Date.now() - 2 * 60000));
+  $("sync-dep").textContent = "synced " + hhmm(new Date(Date.now() - 60000));
+
+  // demo guide
+  $("guide-rows").innerHTML = Object.keys(DEMO).map(k => {
+    const o = ORDERS[DEMO[k]];
+    const why = { missing: "Outbound IDoc failed (status 51)", short: "Stock on inspection hold in Deposco", uom: "Pack unit missing in Deposco item master", changed: "Order changed in SAP after wave release", address: "Postal code corrected in SAP only" }[k];
+    return `<tr><td class="v">${o.no}</td><td>${LABELS[k]}</td><td>${why}</td></tr>`;
+  }).join("");
+  $("guide-open").addEventListener("click", () => { $("guide-scrim").hidden = false; $("guide-close").focus(); });
+  $("guide-close").addEventListener("click", () => { $("guide-scrim").hidden = true; });
+
+  document.addEventListener("keydown", e => {
+    if (e.key !== "Escape") return;
+    if (!$("guide-scrim").hidden) $("guide-scrim").hidden = true;
+    else if (!$("esc-scrim").hidden) $("esc-cancel").click();
+    else toggleSide(false);
+  });
+  for (const s of ["esc-scrim", "guide-scrim"]) {
+    $(s).addEventListener("click", e => { if (e.target.id === s) (s === "esc-scrim" ? $("esc-cancel") : $("guide-close")).click(); });
+  }
+
+  // ---------- Seed history ----------
+  async function seed(spec) {
+    const c = newConv({ auto: spec.auto, when: spec.when, stamp: spec.stamp });
+    active = c;
+    userSays(c, spec.first);
+    await new Promise(r => setTimeout(r, 0));
+    while (c.busy) await new Promise(r => setTimeout(r, 0));
+    c.auto = null;
+    c.stamp = spec.stamp;
+  }
+
+  (async () => {
+    const now = Date.now();
+    await seed({ when: "Mon 14:22", stamp: now - 4 * 864e5, first: "pick qty looks off on SO-100402, says 10 each but they're 5-packs", auto: { seen: "10 each", fixed: FIXED[0] } });
+    await seed({ when: "Yesterday 10:05", stamp: now - 1.4 * 864e5, first: "SO-100388 won't allocate, line 10 is short", auto: { line: "Line 10 · 2210-3M-PNK", bin: "Bin is empty", fixed: FIXED[1] } });
+    await seed({ when: "Yesterday 16:40", stamp: now - 864e5, first: "Label won't print for SO-100391, address error", auto: { err: "Address validation failed", fixed: FIXED[0] } });
+    for (const c of convs) for (const m of c.messages) if (m.kind === "steps") m.items.forEach(s => { s.done = true; });
+    ticketNo = 2418;
+    startNew();
+  })();
+})();
+</script>
+</body>
+</html>
