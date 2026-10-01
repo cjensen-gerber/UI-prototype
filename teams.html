@@ -1,0 +1,1387 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Order Assistant in Teams</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600&display=swap">
+<style>
+/* The Teams client controls fonts and colors, so the chrome and cards use a neutral
+   Teams-like theme. Gerber shows up where a real Teams app can: the app icon, name,
+   copy and the prototype banner (Maize, from .claude/skills/gerber-style-guide). */
+:root {
+  /* Gerber brand primitives */
+  --gcw-navy: #002744;
+  --gcw-cream: #F9F5F3;
+  --gcw-maize: #F2C94C;
+
+  /* Teams-like host theme */
+  --t-frame: #EBEBEB;
+  --t-list: #F5F5F5;
+  --t-thread: #F5F5F5;
+  --t-card: #FFFFFF;
+  --t-hover: #E6E6E6;
+  --t-selected: #FFFFFF;
+  --t-ink: #242424;
+  --t-ink-2: #424242;
+  --t-ink-3: #616161;
+  --t-line: #E0E0E0;
+  --t-line-strong: #D1D1D1;
+  --t-accent: #5B5FC7;
+  --t-accent-hover: #4F52B2;
+  --t-accent-text: #4F52B2;
+  --t-accent-soft: #E8EBFA;
+  --t-accent-ink: #FFFFFF;
+  --t-me: #E8EBFA;
+  --t-bad: #B10E1C;
+  --t-bad-soft: #FDF3F4;
+  --t-ok: #0E700E;
+  --t-ok-soft: #F1FAF1;
+  --t-warn: #835B00;
+  --t-warn-soft: #FBF6D9;
+  --t-badge: #C4314B;
+  --t-scrim: rgba(0, 0, 0, .4);
+  --t-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 2px rgba(0, 0, 0, .1);
+  --t-shadow-lg: 0 14px 28px rgba(0, 0, 0, .22), 0 0 8px rgba(0, 0, 0, .12);
+  --app-icon: var(--gcw-navy);
+  --app-icon-ink: var(--gcw-cream);
+  --hivis: var(--gcw-maize);
+  --hivis-ink: var(--gcw-navy);
+  --font: "Segoe UI", "Segoe UI Web (West European)", -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", sans-serif;
+  --mono: Consolas, "SF Mono", Menlo, ui-monospace, monospace;
+  --brand: "Montserrat", "Helvetica Neue", Arial, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --t-frame: #0A0A0A;
+    --t-list: #1F1F1F;
+    --t-thread: #1F1F1F;
+    --t-card: #292929;
+    --t-hover: #2E2E2E;
+    --t-selected: #333333;
+    --t-ink: #FFFFFF;
+    --t-ink-2: #D6D6D6;
+    --t-ink-3: #ADADAD;
+    --t-line: #3D3D3D;
+    --t-line-strong: #525252;
+    --t-accent: #7F85F5;
+    --t-accent-hover: #9299F7;
+    --t-accent-text: #9EA2FF;
+    --t-accent-soft: #2F2F4A;
+    --t-accent-ink: #0A0A0A;
+    --t-me: #2F2F4A;
+    --t-bad: #F1707B;
+    --t-bad-soft: #3E1F25;
+    --t-ok: #54B054;
+    --t-ok-soft: #052505;
+    --t-warn: #F2C94C;
+    --t-warn-soft: #3A2E0B;
+    --t-badge: #E37D80;
+    --t-scrim: rgba(0, 0, 0, .6);
+    --t-shadow: 0 2px 4px rgba(0, 0, 0, .4), 0 0 2px rgba(0, 0, 0, .3);
+    --t-shadow-lg: 0 14px 28px rgba(0, 0, 0, .5), 0 0 8px rgba(0, 0, 0, .4);
+    --app-icon: #CEE2F7;
+    --app-icon-ink: var(--gcw-navy);
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --t-frame: #0A0A0A;
+  --t-list: #1F1F1F;
+  --t-thread: #1F1F1F;
+  --t-card: #292929;
+  --t-hover: #2E2E2E;
+  --t-selected: #333333;
+  --t-ink: #FFFFFF;
+  --t-ink-2: #D6D6D6;
+  --t-ink-3: #ADADAD;
+  --t-line: #3D3D3D;
+  --t-line-strong: #525252;
+  --t-accent: #7F85F5;
+  --t-accent-hover: #9299F7;
+  --t-accent-text: #9EA2FF;
+  --t-accent-soft: #2F2F4A;
+  --t-accent-ink: #0A0A0A;
+  --t-me: #2F2F4A;
+  --t-bad: #F1707B;
+  --t-bad-soft: #3E1F25;
+  --t-ok: #54B054;
+  --t-ok-soft: #052505;
+  --t-warn: #F2C94C;
+  --t-warn-soft: #3A2E0B;
+  --t-badge: #E37D80;
+  --t-scrim: rgba(0, 0, 0, .6);
+  --t-shadow: 0 2px 4px rgba(0, 0, 0, .4), 0 0 2px rgba(0, 0, 0, .3);
+  --t-shadow-lg: 0 14px 28px rgba(0, 0, 0, .5), 0 0 8px rgba(0, 0, 0, .4);
+  --app-icon: #CEE2F7;
+  --app-icon-ink: var(--gcw-navy);
+}
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { height: 100%; }
+body {
+  margin: 0; background: var(--t-frame); color: var(--t-ink);
+  font: 14px/1.43 var(--font); -webkit-font-smoothing: antialiased;
+}
+button, input, select, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+button:disabled { cursor: default; }
+:focus-visible { outline: 2px solid var(--t-accent); outline-offset: 1px; border-radius: 4px; }
+.mono { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+svg { flex: none; }
+
+/* ---------- Shell ---------- */
+.app { height: 100%; display: grid; grid-template-rows: auto 48px 1fr; }
+.proto {
+  background: var(--hivis); color: var(--hivis-ink);
+  font: 500 12px/1.3 var(--brand); letter-spacing: .02em;
+  padding: 6px 16px; display: flex; gap: 12px; align-items: center; justify-content: center; flex-wrap: wrap; text-align: center;
+}
+.proto b { font-weight: 600; letter-spacing: .05em; text-transform: uppercase; }
+.proto button, .proto a {
+  background: transparent; border: 1px solid currentColor; border-radius: 0; color: inherit; text-decoration: none;
+  padding: 2px 10px; font: 600 11px/1.4 var(--brand); text-transform: uppercase; letter-spacing: .02em;
+}
+.proto-short { display: none; }
+
+.top { display: grid; grid-template-columns: 68px 1fr auto; align-items: center; gap: 12px; padding-right: 16px; background: var(--t-frame); }
+.search {
+  justify-self: center; width: min(560px, 100%); height: 32px; display: flex; align-items: center; gap: 8px;
+  padding: 0 10px; border-radius: 4px; background: var(--t-card); color: var(--t-ink-3); font-size: 14px; border: 1px solid var(--t-line);
+}
+.me-av { width: 32px; height: 32px; }
+
+.body { display: grid; grid-template-columns: 68px 320px 1fr; min-height: 0; }
+
+/* rail */
+.rail { display: flex; flex-direction: column; align-items: center; gap: 4px; padding-top: 4px; background: var(--t-frame); }
+.rail button {
+  position: relative; width: 60px; height: 56px; border: 0; background: transparent; border-radius: 6px;
+  display: grid; place-items: center; align-content: center; gap: 2px; color: var(--t-ink-2); font-size: 10px;
+}
+.rail button:hover { background: var(--t-hover); }
+.rail button[aria-current="true"] { color: var(--t-accent-text); font-weight: 600; }
+.rail button[aria-current="true"]::before { content: ""; position: absolute; left: 0; top: 14px; bottom: 14px; width: 3px; border-radius: 2px; background: var(--t-accent); }
+.count {
+  position: absolute; top: 6px; left: 34px; min-width: 16px; height: 16px; padding: 0 4px; border-radius: 8px;
+  background: var(--t-badge); color: #fff; font: 600 10px/16px var(--font); text-align: center;
+}
+
+/* list pane */
+.list { background: var(--t-list); border-radius: 8px 0 0 0; display: flex; flex-direction: column; min-height: 0; border-right: 1px solid var(--t-line); }
+.list-head { display: flex; align-items: center; gap: 10px; padding: 14px 16px 10px; }
+.list-head h2 { margin: 0; font-size: 18px; font-weight: 700; flex: 1; }
+.list-head .me-av { display: none; }
+.list-body { overflow-y: auto; padding: 0 8px 16px; }
+.sec { margin: 12px 8px 4px; font-size: 12px; font-weight: 600; color: var(--t-ink-3); }
+.row {
+  width: 100%; display: grid; grid-template-columns: 32px 1fr auto; gap: 2px 10px; align-items: center; text-align: left;
+  padding: 8px; border: 0; border-radius: 6px; background: transparent;
+}
+.row:hover { background: var(--t-hover); }
+.row[aria-current="true"] { background: var(--t-selected); box-shadow: var(--t-shadow); }
+.row .nm { font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.row .pv { grid-column: 2; font-size: 12px; color: var(--t-ink-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.row .tm { grid-row: 1; grid-column: 3; font-size: 12px; color: var(--t-ink-3); }
+.row .un { grid-row: 2; grid-column: 3; justify-self: end; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 9px; background: var(--t-badge); color: #fff; font: 600 11px/18px var(--font); text-align: center; }
+.row.unread .nm, .row.unread .pv { font-weight: 700; color: var(--t-ink); }
+.row.ch { grid-template-columns: 20px 1fr auto; padding: 6px 8px 6px 18px; }
+.row.ch .pv { display: none; }
+.row.team { grid-template-columns: 24px 1fr; cursor: default; }
+.row.team:hover { background: transparent; }
+
+.av {
+  width: 32px; height: 32px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center;
+  font: 600 12px/1 var(--font); background: var(--t-accent-soft); color: var(--t-accent-text); position: relative;
+}
+.av.app { border-radius: 6px; background: var(--app-icon); color: var(--app-icon-ink); font: 600 16px/1 var(--brand); }
+.av.sm { width: 24px; height: 24px; font-size: 10px; }
+.av.app.sm { font-size: 12px; border-radius: 4px; }
+.av.team { width: 24px; height: 24px; border-radius: 4px; background: var(--t-ok-soft); color: var(--t-ok); font-size: 11px; }
+.av.grp { background: var(--t-warn-soft); color: var(--t-warn); }
+.av .dot { position: absolute; right: -1px; bottom: -1px; width: 10px; height: 10px; border-radius: 50%; background: #6BB700; border: 2px solid var(--t-list); }
+.hash { color: var(--t-ink-3); display: grid; place-items: center; }
+
+/* main pane */
+.main { background: var(--t-thread); display: grid; grid-template-rows: auto 1fr auto auto; min-height: 0; min-width: 0; }
+.main-head { display: flex; align-items: center; gap: 12px; padding: 10px 20px 0; background: var(--t-card); border-bottom: 1px solid var(--t-line); flex-wrap: wrap; }
+.main-head .who { display: flex; align-items: center; gap: 10px; padding-bottom: 10px; min-width: 0; }
+.main-head h1 { margin: 0; font-size: 16px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.main-head .crumb { font-size: 12px; color: var(--t-ink-3); }
+.tabs { display: flex; gap: 4px; align-self: stretch; }
+.tabs button {
+  border: 0; background: transparent; padding: 6px 10px 12px; font-size: 14px; color: var(--t-ink-2); position: relative;
+}
+.tabs button[aria-selected="true"] { font-weight: 600; color: var(--t-ink); }
+.tabs button[aria-selected="true"]::after { content: ""; position: absolute; left: 10px; right: 10px; bottom: 0; height: 3px; border-radius: 2px; background: var(--t-accent); }
+.back { display: none; border: 0; background: transparent; width: 44px; height: 44px; margin: -6px -10px 4px -14px; place-items: center; color: var(--t-ink-2); }
+
+.feed { overflow-y: auto; padding: 16px 20px 8px; }
+.feed-inner { max-width: 880px; margin: 0 auto; display: flex; flex-direction: column; gap: 2px; }
+
+.divider { display: flex; align-items: center; gap: 12px; margin: 14px 0 8px; font-size: 12px; color: var(--t-ink-3); }
+.divider::before, .divider::after { content: ""; flex: 1; height: 1px; background: var(--t-line); }
+
+.m { display: grid; grid-template-columns: 32px minmax(0, 1fr); gap: 0 10px; margin-top: 10px; }
+.m.cont { margin-top: 4px; }
+.m.cont .av { visibility: hidden; height: 0; }
+.meta { font-size: 12px; color: var(--t-ink-3); margin-bottom: 3px; display: flex; gap: 8px; align-items: baseline; }
+.meta b { font-weight: 600; color: var(--t-ink-2); }
+.meta .tag { font-size: 11px; padding: 0 5px; border-radius: 3px; background: var(--t-line); color: var(--t-ink-2); }
+.bub { background: var(--t-card); border-radius: 6px; padding: 8px 12px; box-shadow: var(--t-shadow); max-width: min(620px, 100%); justify-self: start; white-space: pre-wrap; overflow-wrap: anywhere; }
+.bub.trace { background: transparent; box-shadow: none; padding: 2px 0; color: var(--t-ink-3); font-size: 13px; white-space: normal; }
+.trace ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+.trace li { display: flex; gap: 6px; }
+.trace li::before { content: "✓"; color: var(--t-ok); font-weight: 700; }
+.trace li.run::before { content: "…"; color: var(--t-ink-3); }
+
+.m.me { grid-template-columns: minmax(0, 1fr); justify-items: end; margin-top: 12px; }
+.m.me .meta { justify-content: flex-end; }
+.m.me .bub { background: var(--t-me); box-shadow: none; justify-self: end; }
+
+.typing { display: inline-flex; gap: 4px; padding: 12px 14px; }
+.typing span { width: 6px; height: 6px; border-radius: 50%; background: var(--t-ink-3); animation: blink 1.2s infinite ease-in-out; }
+.typing span:nth-child(2) { animation-delay: .15s; }
+.typing span:nth-child(3) { animation-delay: .3s; }
+@keyframes blink { 0%, 80%, 100% { opacity: .25; } 40% { opacity: 1; } }
+
+/* Adaptive Card look */
+.ac { background: var(--t-card); border-radius: 6px; box-shadow: var(--t-shadow); width: min(600px, 100%); overflow: hidden; justify-self: start; }
+.ac-sec { padding: 12px 16px; display: grid; gap: 6px; }
+.ac-sec + .ac-sec { border-top: 1px solid var(--t-line); }
+.ac-sec.attn { background: var(--t-bad-soft); }
+.ac-sec.good { background: var(--t-ok-soft); }
+.ac-sec.warn { background: var(--t-warn-soft); }
+.ac-sec.acc { background: var(--t-accent-soft); }
+.ac .sub { font-size: 12px; font-weight: 600; color: var(--t-ink-3); }
+.ac h3 { margin: 0; font-size: 18px; font-weight: 600; line-height: 1.3; }
+.ac h4 { margin: 0; font-size: 15px; font-weight: 600; }
+.ac p { margin: 0; }
+.ac .small { font-size: 12px; color: var(--t-ink-3); }
+.ac .hrow { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+.badge { display: inline-flex; align-items: center; white-space: nowrap; font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 999px; }
+.badge.bad { background: var(--t-card); color: var(--t-bad); border: 1px solid currentColor; }
+.badge.ok { background: var(--t-ok-soft); color: var(--t-ok); }
+.badge.warn { background: var(--t-warn-soft); color: var(--t-warn); }
+.badge.open { background: var(--t-accent-soft); color: var(--t-accent-text); }
+.ac table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.ac th, .ac td { text-align: left; padding: 6px 16px; border-top: 1px solid var(--t-line); vertical-align: top; }
+.ac th { font-size: 12px; font-weight: 600; color: var(--t-ink-3); border-top: 0; }
+.ac td.v { font-family: var(--mono); }
+.ac tr.diff td { background: var(--t-bad-soft); }
+.ac tr.diff td.v.wms, .ac tr.diff td.flag { color: var(--t-bad); font-weight: 600; }
+.ac td.flag { width: 28px; text-align: center; font-family: var(--mono); color: var(--t-ok); }
+.ac .tbl { overflow-x: auto; }
+.facts { display: grid; grid-template-columns: max-content 1fr; gap: 2px 12px; font-size: 13px; }
+.facts dt { font-weight: 600; }
+.facts dd { margin: 0; }
+.quote { border-left: 3px solid var(--t-line-strong); padding: 2px 0 2px 10px; }
+.ac-actions { display: flex; flex-wrap: wrap; gap: 8px; padding: 0 16px 12px; }
+.ac-sec + .ac-actions { padding-top: 12px; border-top: 1px solid var(--t-line); }
+.ac-actions.stack { flex-direction: column; }
+.btn {
+  min-height: 32px; padding: 4px 12px; border-radius: 4px; border: 1px solid var(--t-line-strong);
+  background: var(--t-card); font-weight: 600; font-size: 14px; text-align: center;
+}
+.btn:hover:not(:disabled) { background: var(--t-hover); }
+.btn.pri { background: var(--t-accent); border-color: transparent; color: var(--t-accent-ink); }
+.btn.pri:hover:not(:disabled) { background: var(--t-accent-hover); }
+.btn:disabled { color: var(--t-ink-3); background: transparent; border-color: var(--t-line); }
+.ac-actions.stack .btn { text-align: left; font-weight: 400; }
+
+.steps { list-style: none; margin: 0; padding: 0; }
+.steps li + li { border-top: 1px solid var(--t-line); }
+.steps label { display: grid; grid-template-columns: 20px 1fr; gap: 10px; padding: 10px 16px; cursor: pointer; }
+.steps input { width: 18px; height: 18px; margin: 1px 0 0; accent-color: var(--t-accent); }
+.steps .txt { display: grid; gap: 2px; }
+.steps .wh { font-size: 12px; font-weight: 600; color: var(--t-ink-3); }
+.steps .wh.you { color: var(--t-accent-text); }
+.steps .where { font: 12px/1.4 var(--mono); color: var(--t-ink-3); overflow-wrap: anywhere; }
+.steps li.done .main-t { color: var(--t-ink-3); text-decoration: line-through; }
+
+/* suggested actions + composer */
+.suggest { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; padding: 8px 20px 0; max-width: 920px; width: 100%; margin: 0 auto; }
+.sa {
+  min-height: 32px; padding: 4px 12px; border-radius: 4px; border: 1px solid var(--t-accent);
+  background: var(--t-card); color: var(--t-accent-text); font-weight: 600; font-size: 14px;
+}
+.sa:hover { background: var(--t-accent-soft); }
+.composer { padding: 8px 20px 16px; padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px)); }
+.composer form {
+  max-width: 880px; margin: 0 auto; display: flex; align-items: flex-end; gap: 6px;
+  background: var(--t-card); border-radius: 6px; box-shadow: var(--t-shadow); padding: 4px 4px 4px 12px; border-bottom: 2px solid transparent;
+}
+.composer form:focus-within { border-bottom-color: var(--t-accent); }
+.composer textarea { flex: 1; resize: none; border: 0; background: transparent; padding: 8px 0; min-height: 36px; max-height: 140px; line-height: 1.4; outline: none; }
+.send-btn { width: 36px; height: 36px; border: 0; border-radius: 4px; background: transparent; color: var(--t-accent-text); display: grid; place-items: center; }
+.send-btn:hover { background: var(--t-accent-soft); }
+.note-bar { max-width: 880px; margin: 0 auto; font-size: 12px; color: var(--t-ink-3); text-align: center; }
+
+/* tabs content */
+.page { max-width: 880px; margin: 0 auto; display: grid; gap: 12px; }
+.page h2 { margin: 4px 0 0; font-size: 18px; font-weight: 600; }
+.page p { margin: 0; color: var(--t-ink-2); max-width: 70ch; }
+.panel { background: var(--t-card); border-radius: 6px; box-shadow: var(--t-shadow); overflow-x: auto; }
+.panel table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.panel th, .panel td { text-align: left; padding: 8px 14px; border-top: 1px solid var(--t-line); vertical-align: top; }
+.panel th { border-top: 0; font-size: 12px; font-weight: 600; color: var(--t-ink-3); }
+
+/* channel posts */
+.post { background: var(--t-card); border-radius: 6px; box-shadow: var(--t-shadow); margin-top: 12px; scroll-margin-top: 12px; }
+.post.flash { outline: 2px solid var(--t-accent); }
+.post-main { display: grid; grid-template-columns: 32px minmax(0, 1fr); gap: 0 10px; padding: 12px 16px; }
+.post .ac { box-shadow: none; border: 1px solid var(--t-line); }
+.replies { border-top: 1px solid var(--t-line); padding: 4px 16px 10px 58px; display: grid; gap: 2px; }
+.reply { display: grid; grid-template-columns: 24px minmax(0, 1fr); gap: 0 8px; margin-top: 8px; }
+.reply p { margin: 0; }
+.reply-box { margin-top: 10px; font-size: 13px; color: var(--t-ink-3); border: 1px solid var(--t-line); border-radius: 4px; padding: 6px 10px; }
+.empty-state { text-align: center; color: var(--t-ink-3); padding: 40px 16px; }
+
+/* activity */
+.act { width: 100%; display: grid; grid-template-columns: 32px 1fr; gap: 2px 10px; text-align: left; padding: 10px 8px; border: 0; border-radius: 6px; background: transparent; }
+.act:hover { background: var(--t-hover); }
+.act .t { font-size: 13px; }
+.act .s { grid-column: 2; font-size: 12px; color: var(--t-ink-3); }
+.act.unread .t { font-weight: 700; }
+
+/* toast */
+.toast {
+  position: fixed; right: 20px; bottom: 20px; z-index: 40; width: min(360px, calc(100% - 32px));
+  background: var(--t-card); border-radius: 8px; box-shadow: var(--t-shadow-lg); padding: 12px 14px;
+  display: grid; grid-template-columns: 32px 1fr; gap: 2px 10px; text-align: left; border: 0;
+}
+.toast .t { font-weight: 600; font-size: 13px; }
+.toast .s { grid-column: 2; font-size: 13px; color: var(--t-ink-2); }
+
+/* dialog (Teams task module) */
+.scrim { position: fixed; inset: 0; background: var(--t-scrim); display: grid; place-items: center; padding: 16px; z-index: 30; }
+.dlg { width: min(600px, 100%); max-height: calc(100% - 32px); display: flex; flex-direction: column; background: var(--t-card); border-radius: 8px; box-shadow: var(--t-shadow-lg); }
+.dlg header { display: flex; align-items: center; gap: 10px; padding: 16px 20px 8px; }
+.dlg header h2 { margin: 0; font-size: 18px; font-weight: 600; flex: 1; }
+.x { width: 32px; height: 32px; border: 0; border-radius: 4px; background: transparent; display: grid; place-items: center; color: var(--t-ink-2); }
+.x:hover { background: var(--t-hover); }
+.dlg .dbody { padding: 8px 20px 12px; overflow-y: auto; display: grid; gap: 12px; }
+.dlg .dbody > p { margin: 0; color: var(--t-ink-2); }
+.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.field { display: grid; gap: 4px; }
+.field label { font-size: 13px; font-weight: 600; }
+.field select, .field textarea {
+  width: 100%; border: 1px solid var(--t-line-strong); border-bottom-color: var(--t-ink-3); border-radius: 4px;
+  background: var(--t-card); padding: 6px 8px; min-height: 32px;
+}
+.field textarea { min-height: 240px; resize: vertical; font: 12.5px/1.5 var(--mono); }
+.dlg footer { display: flex; justify-content: flex-end; align-items: center; gap: 8px; padding: 12px 20px 16px; flex-wrap: wrap; }
+.dlg footer .note { margin-right: auto; font-size: 12px; color: var(--t-ink-3); }
+.guide table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.guide th, .guide td { text-align: left; padding: 6px 8px; border-top: 1px solid var(--t-line); vertical-align: top; }
+.guide th { border-top: 0; font-size: 12px; color: var(--t-ink-3); }
+.guide ol { margin: 0; padding-left: 20px; color: var(--t-ink-2); display: grid; gap: 4px; }
+
+/* ---------- Phone: Teams mobile layout ---------- */
+@media (max-width: 700px) {
+  .app { grid-template-rows: auto 1fr; }
+  .top { display: none; }
+  .proto { gap: 8px; font-size: 11px; flex-wrap: nowrap; padding-inline: 12px; }
+  .proto-long { display: none; }
+  .proto-short { display: inline; }
+  .proto button, .proto a { white-space: nowrap; padding-inline: 8px; }
+  .body { grid-template-columns: 1fr; grid-template-rows: 1fr auto; }
+  .list { grid-row: 1; border-radius: 0; border-right: 0; }
+  .list-head .me-av { display: grid; }
+  .rail {
+    grid-row: 2; flex-direction: row; justify-content: space-around; padding: 0 0 env(safe-area-inset-bottom, 0px);
+    background: var(--t-card); border-top: 1px solid var(--t-line);
+  }
+  .rail button { height: 56px; flex: 1; }
+  .rail button[aria-current="true"]::before { left: 30%; right: 30%; top: 0; bottom: auto; width: auto; height: 3px; }
+  .count { left: calc(50% + 4px); }
+  .main { display: none; grid-row: 1 / -1; }
+  .app.conv-open .list, .app.conv-open .rail { display: none; }
+  .app.conv-open .main { display: grid; }
+  .back { display: grid; }
+  .main-head { padding: 8px 16px 0; }
+  .feed, .composer, .suggest { padding-left: 12px; padding-right: 12px; }
+  .row, .act { min-height: 56px; }
+  .btn, .sa { min-height: 44px; }
+  .bub, .ac { max-width: 100%; }
+  .ac th, .ac td { padding-inline: 10px; }
+  .row2 { grid-template-columns: 1fr; }
+  .scrim { padding: 0; }
+  .dlg { width: 100%; height: 100%; max-height: none; border-radius: 0; }
+  .replies { padding-left: 16px; }
+  .toast { right: 16px; bottom: 72px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+  <div class="proto" role="note">
+    <b>Prototype</b>
+    <span class="proto-long">The Order Assistant as a Microsoft Teams app. Mock orders, scripted answers, not connected to SAP or Deposco.</span>
+    <span class="proto-short">Mock data</span>
+    <button type="button" data-act="guide">Demo guide</button>
+    <a href="index.html">Web version</a>
+  </div>
+
+  <header class="top">
+    <span></span>
+    <div class="search" aria-hidden="true">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
+      Search
+    </div>
+    <span class="av me-av" title="You (day shift picker)">DP</span>
+  </header>
+
+  <div class="body">
+    <nav class="rail" id="rail" aria-label="App bar"></nav>
+    <aside class="list" id="list" aria-label="Chats and channels"></aside>
+    <section class="main" id="main" aria-label="Conversation">
+      <div class="main-head" id="main-head"></div>
+      <div class="feed" id="feed" aria-live="polite"><div class="feed-inner" id="feed-inner"></div></div>
+      <div class="suggest" id="suggest" aria-label="Suggested replies"></div>
+      <div class="composer" id="composer-wrap">
+        <form id="composer">
+          <textarea id="input" rows="1" aria-label="Type a message" placeholder="Type a message"></textarea>
+          <button type="submit" class="send-btn" aria-label="Send">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M3.4 20.4l17.5-7.5a1 1 0 000-1.8L3.4 3.6a.9.9 0 00-1.3 1l1.6 6.4 9.3 1-9.3 1-1.6 6.4a.9.9 0 001.3 1z"/></svg>
+          </button>
+        </form>
+      </div>
+    </section>
+  </div>
+</div>
+
+<div class="scrim" id="esc-scrim" hidden>
+  <div class="dlg" role="dialog" aria-modal="true" aria-labelledby="esc-title">
+    <header>
+      <span class="av app sm" aria-hidden="true">G</span>
+      <h2 id="esc-title">Escalate to the system owner</h2>
+      <button type="button" class="x" data-act="esc-cancel" aria-label="Close">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </header>
+    <div class="dbody">
+      <p>I've drafted the ticket from this chat. It's posted to the owner team's channel in Teams, and their reply comes back here.</p>
+      <div class="row2">
+        <div class="field">
+          <label for="esc-team">Send to</label>
+          <select id="esc-team">
+            <option>SAP order support</option>
+            <option>Deposco admin</option>
+            <option>Quality team (inventory holds)</option>
+            <option>Shift lead</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="esc-pri">Priority</label>
+          <select id="esc-pri">
+            <option value="High">High · ships today</option>
+            <option value="Normal">Normal</option>
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <label for="esc-body">Ticket details</label>
+        <textarea id="esc-body"></textarea>
+      </div>
+    </div>
+    <footer>
+      <span class="note">Prototype: nothing is sent.</span>
+      <button type="button" class="btn" data-act="esc-cancel">Cancel</button>
+      <button type="button" class="btn pri" id="esc-send">Send</button>
+    </footer>
+  </div>
+</div>
+
+<div class="scrim guide" id="guide-scrim" hidden>
+  <div class="dlg" role="dialog" aria-modal="true" aria-labelledby="guide-title">
+    <header>
+      <h2 id="guide-title">Demo guide</h2>
+      <button type="button" class="x" data-act="guide-close" aria-label="Close">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </header>
+    <div class="dbody">
+      <p>The same five mock orders as the web version. Type a phrase in the Order Assistant chat or tap a button on the welcome card.</p>
+      <table>
+        <thead><tr><th>Order</th><th>Problem on the floor</th><th>Root cause</th></tr></thead>
+        <tbody id="guide-rows"></tbody>
+      </table>
+      <p><b>What's different in Teams</b></p>
+      <ol>
+        <li>Answers to the assistant's questions are suggested replies above the message box. They disappear once you answer, as in Teams.</li>
+        <li>Escalations open a Teams dialog and post a card to the owner team's channel under <b>Warehouse support</b>.</li>
+        <li>Open that channel to play the system owner. Select <b>Assign to me</b>, then <b>Mark fixed</b>. The update arrives in the warehouse user's chat, in Activity and as a notification.</li>
+        <li>Make the window narrow (under 700px) to see the phone layout.</li>
+      </ol>
+    </div>
+    <footer><button type="button" class="btn pri" data-act="guide-close">Close</button></footer>
+  </div>
+</div>
+
+<div id="toast-wrap"></div>
+
+<script>
+(function () {
+  "use strict";
+
+  const reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const hhmm = (d = new Date()) => String(d.getHours()).padStart(2, "0") + ":" + String(d.getMinutes()).padStart(2, "0");
+  const wait = ms => new Promise(r => setTimeout(r, reduceMotion ? ms / 3 : ms));
+  const $ = id => document.getElementById(id);
+
+  const ICON = {
+    activity: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M6 16V11a6 6 0 0112 0v5l1.5 2h-15z"/><path d="M10 20.5a2 2 0 004 0"/></svg>',
+    chat: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/></svg>',
+    calendar: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>',
+    apps: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg>',
+    back: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>',
+    hash: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 4L7 20M17 4l-2 16M4 9h16M3 15h16"/></svg>'
+  };
+  const APP_AV = (sm) => `<span class="av app${sm ? " sm" : ""}" aria-hidden="true">G</span>`;
+
+  // ---------- Mock data (fictional, same as the web version) ----------
+  const ORDERS = {
+    "SO-100412": { no: "SO-100412", customer: "Brightside Boutique", scenario: "missing", ship: "Ships today · 15:00 UPS pickup", today: true },
+    "SO-100437": { no: "SO-100437", customer: "Little Harbor Kids Co.", scenario: "short", ship: "Ships today · 15:00 UPS pickup", today: true },
+    "SO-100455": { no: "SO-100455", customer: "Maple & Moss Baby", scenario: "uom", ship: "Ships 2 Oct", today: false },
+    "SO-100468": { no: "SO-100468", customer: "Northstar Department Stores", scenario: "changed", ship: "Ships today · 16:30 LTL pickup", today: true },
+    "SO-100479": { no: "SO-100479", customer: "Tiny Trails Outfitters", scenario: "address", ship: "Ships today · 15:00 UPS pickup", today: true },
+    // history only
+    "SO-100391": { no: "SO-100391", customer: "Pebble Lane Kids", scenario: "address", ship: "Shipped 30 Sep", today: false },
+    "SO-100388": { no: "SO-100388", customer: "Cedar & Clover Baby", scenario: "short", ship: "Ships 2 Oct", today: false },
+    "SO-100402": { no: "SO-100402", customer: "Riverbend Family Stores", scenario: "uom", ship: "Shipped 29 Sep", today: false }
+  };
+
+  const LABELS = {
+    missing: "Order isn't in Deposco",
+    short: "Order won't allocate",
+    uom: "Pick quantity looks wrong",
+    changed: "Packing list doesn't match the order",
+    address: "Shipping label won't print"
+  };
+  const DEMO = { missing: "SO-100412", short: "SO-100437", uom: "SO-100455", changed: "SO-100468", address: "SO-100479" };
+
+  const PATTERNS = {
+    address: /label|address|carrier|\bups\b|fedex|usps|ship.?to|\bzip\b|postal|validation|rate/i,
+    uom: /\buom\b|unit of measure|multi-?pack|\d-?packs?\b|case pack|eaches|\bpk\b|qty.*(wrong|off)|quantity.*(wrong|off)|wrong (qty|quantity)|units? (don'?t|do not) match|packs? vs/i,
+    changed: /chang|added|extra (line|item)|packing (list|slip)|doesn'?t match the order|different (qty|quantity)|amend|updated/i,
+    missing: /not (in|showing|show(ing)? up|appearing|found)|can'?t find|cannot find|missing|no order|doesn'?t (show|appear|exist)|isn'?t in|didn'?t drop|never (came|arrived|dropped)/i,
+    short: /allocat|short|not enough|inventory|stock|on ?hand|available|won'?t release|wave/i
+  };
+  function detect(text) {
+    let best = null, n = 0;
+    for (const key of Object.keys(PATTERNS)) {
+      const m = text.match(new RegExp(PATTERNS[key].source, "gi"));
+      if (m && m.length > n) { best = key; n = m.length; }
+    }
+    return best;
+  }
+  function findOrderNo(text) {
+    const m = text.match(/\bSO[-\s]?(\d{6})\b/i) || text.match(/\b(1\d{5})\b/);
+    return m ? "SO-" + m[1] : null;
+  }
+
+  // ---------- Owner channels (Warehouse support team) ----------
+  const CHANNELS = {
+    quality: { name: "Quality holds", team: "Quality team (inventory holds)", owner: "Quality on-call", initials: "QA", posts: [], unread: 0 },
+    sap: { name: "SAP order support", team: "SAP order support", owner: "SAP support on-call", initials: "SA", posts: [], unread: 0 },
+    deposco: { name: "Deposco admin", team: "Deposco admin", owner: "Deposco admin on-call", initials: "DA", posts: [], unread: 0 },
+    shift: { name: "Shift leads", team: "Shift lead", owner: "Shift lead on-call", initials: "SL", posts: [], unread: 0 }
+  };
+  const chFor = team => Object.keys(CHANNELS).find(k => CHANNELS[k].team === team) || "shift";
+
+  // ---------- Scenarios (same scripts as the web version, plus the owner's reply) ----------
+  const FIXED = ["Yes, it's fixed", "No, escalate"];
+
+  const SCEN = {
+    missing: {
+      team: "SAP order support",
+      ask: "Please reprocess outbound IDoc 0000048213 so the order reaches Deposco.",
+      reply: "Reprocessed IDoc 0000048213. It's status 53 now and the order is in Deposco.",
+      next: o => `Search Deposco for ${o.no} and add it to the next wave.`,
+      async run(c, o) {
+        await trace(c, [
+          `Found ${o.no} in SAP: delivery 80041277, created today 07:58`,
+          "Searched Deposco outbound orders: no match",
+          "Checked the SAP → Deposco interface log"
+        ]);
+        const urg = await ask(c, `I found ${o.no} in SAP, but Deposco never received it. Is this order on today's truck?`, ["Yes, ships today", "No, later this week"], "urgency");
+        c.urgent = /yes/i.test(urg);
+        await post(c, {
+          kind: "diagnosis", title: "The order never reached Deposco", sev: "Blocked",
+          item: `${o.customer} · 2 lines · 84 EA`,
+          rows: [
+            ["Order status", "Released · delivery 80041277", "Not found", true],
+            ["Outbound IDoc", "0000048213 · status 51 (error)", "Nothing received", true],
+            ["Error text", "Ship-to 300218 locked by another user", "—", true],
+            ["Customer", o.customer, "—", false]
+          ],
+          cause: "SAP tried to send the order at 07:59 while someone was editing the customer record. The send failed and SAP doesn't retry it on its own. The lock cleared at 08:31, so a resend will work.",
+          owner: "Shift lead (SAP access) or SAP order support"
+        }, 900);
+        await post(c, {
+          kind: "steps", title: "Get the order into Deposco",
+          items: [
+            { who: "Shift lead", text: "Resend IDoc 0000048213 from the SAP interface monitor.", where: "SAP › BD87 › Status 51 › Reprocess" },
+            { who: "You", text: "Wait 5 minutes, then search Deposco for the order.", where: `Deposco › Orders › Outbound › search ${o.no}` },
+            { who: "You", text: "When it shows as New, add it to the next wave and pick as normal." }
+          ]
+        });
+        if (c.urgent) await say(c, "The UPS pickup is at 15:00. If the order isn't in Deposco by 14:00, escalate and the SAP team will push it through by hand.");
+        await fixcheck(c);
+      }
+    },
+
+    short: {
+      team: "Quality team (inventory holds)",
+      ask: "Please release the inspection hold on 36 EA of 2210-3M-PNK in QA-HOLD-01 (PO 4500082231) so the order can allocate.",
+      reply: "Released the hold on 36 EA in QA-HOLD-01. All 6 cartons had green tags.",
+      next: o => `Re-allocate ${o.no} from wave W-2287. It should allocate all 30 EA now.`,
+      async run(c, o) {
+        await trace(c, [`Loaded ${o.no}: 3 lines, wave W-2287`]);
+        await ask(c, "Which line won't allocate?", ["Line 10 · 2210-3M-PNK", "Line 20 · 2214-6M-WHT", "Not sure"], "line");
+        const bin = await ask(c, "Have you checked the pick location, A-14-03?", ["Bin is empty", "There's stock in the bin", "Haven't checked"], "bin");
+        await trace(c, [
+          "Compared SAP stock with Deposco available inventory",
+          "Checked Deposco locations and hold status for 2210-3M-PNK",
+          "Found receipt for PO 4500082231 on 28 Sep"
+        ]);
+        await post(c, {
+          kind: "diagnosis", title: "Stock is on an inspection hold in Deposco", sev: "Can't allocate",
+          item: "2210-3M-PNK · Baby Girls Pink Ruffle Bodysuit, 0-3M · line 10",
+          rows: [
+            ["Ordered", "30 EA", "30 EA · 12 allocated", true],
+            ["On hand", "48 EA", "48 EA", false],
+            ["Available to allocate", "48 EA unrestricted", "12 EA", true],
+            ["Where it is", "Plant 1000 · SLoc 0001", "A-14-03: 12 EA\nQA-HOLD-01: 36 EA", true],
+            ["Hold status", "None", "Inspection hold since 28 Sep", true]
+          ],
+          cause: "Receiving put 36 units into inspection on 28 Sep. SAP posted them as unrestricted stock, but Deposco still has them on hold, so it can only allocate the 12 units in the pick face.",
+          owner: "Quality team"
+        }, 900);
+        if (/stock/i.test(bin)) await say(c, "You said there's stock in A-14-03. Deposco expects 12 EA there. If you count more, record a cycle count once this is fixed.");
+        await post(c, {
+          kind: "steps", title: "Release the held stock",
+          items: [
+            { who: "You", text: "Go to QA-HOLD-01 and confirm 6 cartons of 2210-3M-PNK (6 × 6 EA)." },
+            { who: "You", text: "Check each carton for an inspection tag. A green tag means it passed." },
+            { who: "Quality team", text: "Release the hold in Deposco. Warehouse users can't release inspection holds.", where: "Deposco › Inventory › Holds › QA-HOLD-01" },
+            { who: "You", text: "After the release, re-allocate the order from the wave.", where: "Deposco › Waves › W-2287 › Re-allocate" }
+          ]
+        });
+        await say(c, "Step 3 needs the Quality team. If the cartons have green tags, escalate now and I'll post it to their channel.");
+        await fixcheck(c);
+      }
+    },
+
+    uom: {
+      team: "Deposco admin",
+      ask: "Item sync for 3305-NB-MLT failed on 29 Sep. Please check why the nightly item master job failed so other new pack units aren't affected.",
+      reply: "The item job timed out on 29 Sep. I re-ran it for every item changed that day.",
+      next: () => "Nothing to do on the floor. The fix covers other new pack units too.",
+      async run(c, o) {
+        await trace(c, [`Loaded ${o.no}: 1 line, 3305-NB-MLT`]);
+        await ask(c, "What does the pick screen tell you to pick?", ["10 each", "10 packs", "Something else"], "seen");
+        await trace(c, [
+          "Compared order quantity and unit in SAP and Deposco",
+          "Checked item master sync history for 3305-NB-MLT"
+        ]);
+        await post(c, {
+          kind: "diagnosis", title: "Unit of measure mismatch", sev: "Will ship short",
+          item: "3305-NB-MLT · 5-Pack Baby Neutral Assorted Short-Sleeve Bodysuits, NEWBORN",
+          rows: [
+            ["Order quantity", "10 PK", "10 EA", true],
+            ["Pack size", "1 PK = 5 EA", "No PK unit set up", true],
+            ["Pieces to ship", "50 EA", "10 EA", true],
+            ["Item master sync", "Changed 29 Sep 05:40", "Sync failed 29 Sep 06:02", true]
+          ],
+          cause: "The pack unit was added to this item in SAP on 29 Sep, but the nightly item sync to Deposco failed. Deposco reads 10 packs as 10 single pieces, so the order would ship 40 pieces short.",
+          owner: "Deposco admin (item master)"
+        }, 900);
+        await post(c, {
+          kind: "action", title: "I re-ran the item sync for 3305-NB-MLT",
+          detail: `Sent at ${hhmm()}. Deposco now shows 1 PK = 5 EA.`
+        }, 1100);
+        await post(c, {
+          kind: "steps", title: "Re-allocate with the right quantity",
+          items: [
+            { who: "You", text: "Stop picking this line. If you already picked 10 single pieces, keep them at the pack station." },
+            { who: "You", text: "Unallocate the order so Deposco drops the old pick.", where: `Deposco › Orders › ${o.no} › Unallocate` },
+            { who: "You", text: "Allocate it again. The pick should now read 10 PK (50 EA)." }
+          ]
+        });
+        await fixcheck(c);
+      }
+    },
+
+    changed: {
+      team: "SAP order support",
+      ask: "Order changed in SAP after wave release; Deposco rejected the change. Please resend ORDCHG once the order is removed from wave W-2291.",
+      reply: "Resent the order change. Deposco accepted it.",
+      next: o => `Add ${o.no} to a new wave and pick the extra units.`,
+      async run(c, o) {
+        await trace(c, [
+          `Loaded ${o.no} in SAP: changed 30 Sep 15:20 by customer service`,
+          `Loaded ${o.no} in Deposco: released to wave W-2291 on 30 Sep 11:02`
+        ]);
+        const stage = await ask(c, "How far along is the order?", ["Picking", "Picked, at the pack station", "Already packed"], "stage");
+        await trace(c, ["Checked change messages for this order"]);
+        await post(c, {
+          kind: "diagnosis", title: "Deposco has an old version of the order", sev: "Blocked at pack",
+          item: `${o.customer} · 3 lines in SAP, 2 in Deposco`,
+          rows: [
+            ["Line 10 · 2230-12M-NVY", "36 EA", "24 EA", true],
+            ["Line 20 · 2231-12M-GRY", "24 EA", "24 EA", false],
+            ["Line 30 · 2240-18M-RED", "12 EA (added)", "Not on order", true],
+            ["Change message", "Sent 30 Sep 15:21", "Rejected: order in active wave", true]
+          ],
+          cause: "Customer service increased line 10 and added line 30 after the order was released to a wave. Deposco rejects changes to orders in an active wave, so the update never applied.",
+          owner: "You, with the assistant resending the change"
+        }, 900);
+        if (/packed/i.test(stage)) await say(c, "Since it's already packed, don't unpack it. Keep the carton open and add the extra units at the pack station after step 4.");
+        await post(c, {
+          kind: "steps", title: "Apply the customer's change",
+          items: [
+            { who: "You", text: "Keep what's already picked together. Don't close or ship the order." },
+            { who: "You", text: "Remove the order from the wave.", where: `Deposco › Waves › W-2291 › ${o.no} › Remove from wave` },
+            { who: "Assistant", text: "Once it's out of the wave, tell me and I'll resend the change from SAP." },
+            { who: "You", text: "Add the order to a new wave and pick the extra 12 EA on line 10 and 12 EA on line 30." }
+          ]
+        });
+        await fixcheck(c);
+      }
+    },
+
+    address: {
+      team: "Deposco admin",
+      ask: "Ship-to postal code was corrected in SAP after the order reached Deposco. Fixed by hand this time; please look at why address changes don't sync.",
+      reply: "Turned on address updates for orders already in Deposco. Future changes will sync.",
+      next: o => `Print the labels for ${o.no} if you haven't already.`,
+      async run(c, o) {
+        await trace(c, [`Loaded shipment for ${o.no} in Deposco: UPS Ground, 3 cartons`]);
+        const err = await ask(c, "What does the label error say?", ["Address validation failed", "Invalid service or account", "No error, it just won't print"], "err");
+        await trace(c, ["Read the carrier response for this shipment", "Compared ship-to address in SAP and Deposco"]);
+        if (!/address/i.test(err)) await say(c, `Deposco logged an address validation error from UPS at ${hhmm(new Date(Date.now() - 6 * 60000))}. That's what is blocking the label.`);
+        await post(c, {
+          kind: "diagnosis", title: "Ship-to postal code is out of date in Deposco", sev: "Blocked at label",
+          item: `${o.customer} · Distribution center`,
+          rows: [
+            ["Street", "4100 Commerce Pkwy, Dock 6", "4100 Commerce Pkwy, Dock 6", false],
+            ["City / State", "Greenville, SC", "Greenville, SC", false],
+            ["Postal code", "29607", "29067", true],
+            ["Carrier response", "—", "Postal code does not match city", true]
+          ],
+          cause: "Customer service fixed a typo in the postal code in SAP on 30 Sep. Deposco copied the address when the order arrived on 29 Sep, so it still has the old one. SAP doesn't resend addresses for orders already in Deposco.",
+          owner: "You can fix this one"
+        }, 900);
+        await post(c, {
+          kind: "steps", title: "Fix the address and print the label",
+          items: [
+            { who: "You", text: "Open the shipment and edit the ship-to address.", where: `Deposco › Shipping › ${o.no} › Edit ship-to` },
+            { who: "You", text: "Change the postal code to 29607. Leave everything else as it is." },
+            { who: "You", text: "Select Rate & Label again. The labels should print." }
+          ]
+        });
+        await say(c, "I've logged this so the system owners can see how often address changes don't sync.");
+        await fixcheck(c);
+      }
+    }
+  };
+
+  // ---------- State ----------
+  const thread = [];          // the one 1:1 chat with the bot
+  const issues = [];          // one per problem reported in that chat
+  const activity = [];
+  let issue = null;
+  let typing = false;
+  let seq = 1;
+  let ticketNo = 2418;
+  let botUnread = 0;
+  const ui = { view: "chat", open: "bot", tab: "chat", convOpen: false, flashPost: null };
+
+  function newIssue(first) {
+    const c = { id: "i" + seq++, order: null, symptom: null, status: "open", pending: null, busy: false, halt: false, diag: null, first, when: "Today " + hhmm(), ticket: null };
+    issues.push(c);
+    return c;
+  }
+
+  function push(msg) {
+    msg.time = msg.time || hhmm();
+    thread.push(msg);
+  }
+
+  async function post(c, msg, ms = 650) {
+    if (c.halt) return;
+    typing = true; draw();
+    await wait(ms);
+    typing = false;
+    if (c.halt) { draw(); return; }
+    msg.role = "bot";
+    msg.issue = c;
+    if (msg.kind === "diagnosis") c.diag = msg;
+    push(msg);
+    draw(true);
+  }
+  const say = (c, text, ms) => post(c, { kind: "text", text }, ms);
+
+  async function trace(c, items) {
+    if (c.halt) return;
+    const msg = { role: "bot", kind: "trace", items: [], issue: c };
+    push(msg);
+    for (const it of items) {
+      msg.items.push({ text: it, run: true });
+      draw(true);
+      await wait(450);
+      msg.items[msg.items.length - 1].run = false;
+    }
+    draw(true);
+  }
+
+  function ask(c, text, options, key) {
+    return new Promise(resolve => {
+      typing = true; draw();
+      wait(600).then(() => {
+        typing = false;
+        if (c.halt) { draw(); return; }
+        push({ role: "bot", kind: "text", text, issue: c });
+        c.pending = { options, resolve, key };
+        draw(true);
+      });
+    });
+  }
+
+  function userSays(text) {
+    push({ role: "user", kind: "text", text });
+    const c = issue;
+    if (c && c.pending) {
+      const { resolve } = c.pending;
+      c.pending = null;
+      draw(true);
+      resolve(text);
+      return;
+    }
+    draw(true);
+    if (c && c.busy) { say(c, "One moment, I'm still checking this order."); return; }
+    const n = newIssue(text);
+    issue = n;
+    n.busy = true;
+    intake(n, text).finally(() => { n.busy = false; });
+  }
+
+  async function intake(c, text) {
+    let no = findOrderNo(text);
+    let sym = detect(text);
+    if (!no && !sym) {
+      const ans = await ask(c, "I can help when an order won't drop, allocate, pick, pack or ship. Which of these is closest?", Object.values(LABELS), "symptom");
+      sym = Object.keys(LABELS).find(k => LABELS[k] === ans) || detect(ans);
+      no = findOrderNo(ans);
+    }
+    if (sym) c.symptom = sym;
+    let prompt = sym ? `Got it: ${LABELS[sym].toLowerCase()}. Which order is it? Type or scan the number on the pick ticket.` : "Which order is it? Type or scan the number on the pick ticket.";
+    while (!no || !ORDERS[no]) {
+      if (no && !ORDERS[no]) {
+        await say(c, `I can't find ${no} in SAP or Deposco. Check the number on the pick ticket and try again.`);
+        prompt = "Which order is it?";
+      }
+      const opts = sym ? [DEMO[sym]] : Object.values(DEMO);
+      const ans = await ask(c, prompt, opts, "order");
+      no = findOrderNo(ans);
+      if (!no) prompt = "I need the order number to look it up. It starts with SO-, like SO-100437.";
+    }
+    const o = ORDERS[no];
+    c.order = o;
+    draw();
+    if (c.symptom && c.symptom !== o.scenario) {
+      await say(c, `Thanks. I checked ${o.no}, and the real problem is a little different from what it looks like on the floor.`);
+    }
+    await SCEN[o.scenario].run(c, o);
+  }
+
+  async function fixcheck(c) {
+    const ans = await ask(c, "Work through the steps and tick them off as you go. Did this fix it?", FIXED, "fixed");
+    if (/^y/i.test(ans) || /fixed|works|done/i.test(ans) && !/not|no\b/i.test(ans)) {
+      await say(c, `I've marked ${c.order.no} as resolved and added it to the fix log, so the SAP and Deposco owners can see how often this happens.`);
+      c.status = "resolved";
+      draw();
+    } else {
+      openEscalate(c);
+    }
+  }
+
+  function createTicket(c, team, priority) {
+    const id = "WH-" + ticketNo++;
+    const chId = chFor(team);
+    const ch = CHANNELS[chId];
+    const o = c.order, d = c.diag, sc = SCEN[o.scenario];
+    c.pending = null;
+    c.status = "escalated";
+    c.ticket = id;
+    c.halt = true;
+    typing = false;
+    const steps = thread.filter(m => m.issue === c && m.kind === "steps").flatMap(m => m.items);
+    ch.posts.push({
+      id, issueId: c.id, time: hhmm(), priority, order: o.no, customer: o.customer, ship: o.ship,
+      saw: c.first || LABELS[o.scenario], diag: d ? d.title : LABELS[o.scenario], cause: d ? d.cause : "",
+      ask: sc.ask, steps: steps.map(s => ({ text: s.text, done: !!s.done })), assigned: null, fixed: false, replies: []
+    });
+    ch.unread++;
+    push({
+      role: "bot", kind: "ticket", issue: c, id, team, chId, priority,
+      text: priority === "High" ? "Marked high priority because it ships today. They usually reply within 30 minutes." : "They usually reply within 4 hours."
+    });
+    draw(true);
+  }
+
+  // Owner actions in the channel, sent back to the warehouse user's chat
+  function proactive(msg, note) {
+    msg.role = "bot";
+    push(msg);
+    const viewing = ui.open === "bot" && ui.tab === "chat" && (ui.convOpen || !narrow.matches);
+    if (!viewing) botUnread++;
+    activity.unshift({ title: "Order Assistant", text: note, time: hhmm(), unread: true });
+    toast("Order Assistant", note);
+    draw(viewing);
+  }
+
+  function assign(p) {
+    const ch = CHANNELS[p.ch];
+    p.assigned = ch.owner;
+    p.replies.push({ who: ch.owner, initials: ch.initials, time: hhmm(), text: "I'm on it." });
+    proactive({ kind: "text", text: `${ch.owner} picked up ${p.id} for ${p.order}. I'll tell you here when it's done.` }, `${ch.owner} picked up ${p.id}`);
+  }
+
+  function markFixed(p) {
+    const ch = CHANNELS[p.ch];
+    const c = issues.find(i => i.id === p.issueId);
+    const sc = SCEN[ORDERS[p.order].scenario];
+    if (!p.assigned) p.assigned = ch.owner;
+    p.fixed = true;
+    p.replies.push({ who: ch.owner, initials: ch.initials, time: hhmm(), text: sc.reply });
+    if (c) c.status = "resolved";
+    proactive({ kind: "update", id: p.id, order: p.order, who: ch.owner, reply: sc.reply, next: sc.next(ORDERS[p.order]) }, `Update on ${p.id}: ${ch.owner} fixed it`);
+  }
+
+  // ---------- Toast ----------
+  let toastTimer = null;
+  function toast(title, text) {
+    $("toast-wrap").innerHTML = `<button type="button" class="toast" data-act="open" data-target="bot">${APP_AV()}<span class="t">${esc(title)}</span><span class="s">${esc(text)}</span></button>`;
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => { $("toast-wrap").innerHTML = ""; }, 6000);
+  }
+
+  // ---------- Rendering ----------
+  const narrow = window.matchMedia("(max-width: 700px)");
+
+  function draw(scroll) {
+    drawRail();
+    drawList();
+    drawMain(scroll);
+    $("app").classList.toggle("conv-open", ui.convOpen);
+  }
+
+  function drawRail() {
+    const actUnread = activity.filter(a => a.unread).length;
+    const chatUnread = (botUnread ? 1 : 0) + Object.values(CHANNELS).filter(c => c.unread).length;
+    const items = [
+      ["activity", "Activity", actUnread],
+      ["chat", "Chat", chatUnread],
+      ["calendar", "Calendar", 0],
+      ["apps", "Apps", 0]
+    ];
+    $("rail").innerHTML = items.map(([k, label, n]) =>
+      `<button type="button" data-act="nav" data-view="${k}" aria-current="${ui.view === k}">${ICON[k]}<span>${label}</span>${n ? `<span class="count">${n}</span>` : ""}</button>`).join("");
+  }
+
+  function lastPreview() {
+    for (let i = thread.length - 1; i >= 0; i--) {
+      const m = thread[i];
+      if (m.kind === "divider") continue;
+      if (m.role === "user") return "You: " + m.text;
+      if (m.kind === "text") return m.text;
+      if (m.kind === "diagnosis") return "Diagnosis: " + m.title;
+      if (m.kind === "steps") return "Steps to fix: " + m.title;
+      if (m.kind === "ticket") return `Escalated ${m.id}`;
+      if (m.kind === "update") return `Update on ${m.id}`;
+      if (m.kind === "welcome") return "Tell me what's wrong with the order.";
+      return "Order Assistant";
+    }
+    return "";
+  }
+
+  function drawList() {
+    const el = $("list");
+    const head = (t) => `<div class="list-head"><span class="av me-av">DP</span><h2>${t}</h2></div>`;
+    if (ui.view === "activity") {
+      el.innerHTML = head("Activity") + `<div class="list-body">${activity.length ? activity.map((a, i) =>
+        `<button type="button" class="act ${a.unread ? "unread" : ""}" data-act="activity" data-i="${i}">${APP_AV()}<span class="t">${esc(a.text)}</span><span class="s">${esc(a.title)} · ${esc(a.time)}</span></button>`).join("")
+        : `<div class="empty-state">No new activity</div>`}</div>`;
+      return;
+    }
+    const cur = t => ui.open === t && (ui.convOpen || !narrow.matches);
+    const lastTime = (thread.filter(m => m.kind !== "divider").slice(-1)[0] || {}).time || "";
+    let h = head("Chat") + `<div class="list-body">`;
+    h += `<div class="sec">Pinned</div>
+      <button type="button" class="row ${botUnread ? "unread" : ""}" data-act="open" data-target="bot" aria-current="${cur("bot")}">
+        ${APP_AV()}<span class="nm">Order Assistant</span><span class="tm">${esc(lastTime)}</span>
+        <span class="pv">${esc(lastPreview())}</span>${botUnread ? `<span class="un">${botUnread}</span>` : ""}
+      </button>`;
+    h += `<div class="sec">Chats</div>
+      <button type="button" class="row" data-act="open" data-target="dayshift" aria-current="${cur("dayshift")}">
+        <span class="av grp">DS</span><span class="nm">Day shift</span><span class="tm">07:10</span>
+        <span class="pv">Receiving: 36 EA of the pink ruffle bodysuits…</span>
+      </button>`;
+    h += `<div class="sec">Teams and channels</div>
+      <div class="row team"><span class="av team">WS</span><span class="nm">Warehouse support</span></div>`;
+    for (const [k, ch] of Object.entries(CHANNELS)) {
+      h += `<button type="button" class="row ch ${ch.unread ? "unread" : ""}" data-act="open" data-target="ch:${k}" aria-current="${cur("ch:" + k)}">
+        <span class="hash">${ICON.hash}</span><span class="nm">${esc(ch.name)}</span>${ch.unread ? `<span class="un" style="grid-row:1">${ch.unread}</span>` : ""}
+      </button>`;
+    }
+    el.innerHTML = h + `</div>`;
+  }
+
+  function drawMain(scroll) {
+    const headEl = $("main-head"), inner = $("feed-inner"), feed = $("feed");
+    const back = `<button type="button" class="back" data-act="back" aria-label="Back">${ICON.back}</button>`;
+    let showComposer = false, sugg = "";
+
+    if (ui.open === "bot") {
+      const tabs = [["chat", "Chat"], ["issues", "Issues"], ["about", "About"]];
+      headEl.innerHTML = `<div class="who">${back}${APP_AV()}<div><h1>Order Assistant</h1><div class="crumb">Gerber Childrenswear · App</div></div></div>
+        <div class="tabs" role="tablist">${tabs.map(([k, t]) => `<button type="button" role="tab" data-act="tab" data-tab="${k}" aria-selected="${ui.tab === k}">${t}</button>`).join("")}</div>`;
+      if (ui.tab === "chat") {
+        inner.innerHTML = renderThread();
+        showComposer = true;
+        if (issue && issue.pending && !typing) {
+          sugg = issue.pending.options.map(o => `<button type="button" class="sa" data-act="say" data-say="${esc(o)}">${/^SO-\d{6}$/.test(o) ? `<span class="mono">${esc(o)}</span>` : esc(o)}</button>`).join("");
+        }
+      } else if (ui.tab === "issues") {
+        inner.innerHTML = renderIssues();
+      } else {
+        inner.innerHTML = renderAbout();
+      }
+    } else if (ui.open === "dayshift") {
+      headEl.innerHTML = `<div class="who">${back}<span class="av grp">DS</span><div><h1>Day shift</h1><div class="crumb">Group chat · 14 people</div></div></div>`;
+      inner.innerHTML = renderDayShift();
+    } else {
+      const k = ui.open.slice(3), ch = CHANNELS[k];
+      headEl.innerHTML = `<div class="who">${back}<span class="hash">${ICON.hash}</span><div><h1>${esc(ch.name)}</h1><div class="crumb">Warehouse support</div></div></div>
+        <div class="tabs" role="tablist"><button type="button" role="tab" aria-selected="true">Posts</button></div>`;
+      inner.innerHTML = renderChannel(k);
+    }
+
+    $("suggest").innerHTML = sugg;
+    $("suggest").hidden = !sugg;
+    $("composer-wrap").hidden = !showComposer;
+    if (ui.flashPost) {
+      const p = document.getElementById("post-" + ui.flashPost);
+      ui.flashPost = null;
+      if (p) { p.classList.add("flash"); p.scrollIntoView({ block: "start" }); setTimeout(() => p.classList.remove("flash"), 1600); }
+    } else if (scroll) {
+      feed.scrollTop = feed.scrollHeight;
+    }
+  }
+
+  function renderThread() {
+    let prev = null;
+    const out = thread.map((m, i) => {
+      if (m.kind === "divider") { prev = null; return `<div class="divider">${esc(m.text)}</div>`; }
+      if (m.role === "user") {
+        prev = "user";
+        return `<div class="m me"><div class="meta">${esc(m.time)}</div><div class="bub">${esc(m.text)}</div></div>`;
+      }
+      const cont = prev === "bot";
+      prev = "bot";
+      return `<div class="m ${cont ? "cont" : ""}">${APP_AV()}<div>${cont ? "" : `<div class="meta"><b>Order Assistant</b><span class="tag">App</span>${esc(m.time)}</div>`}${renderBot(m, i)}</div></div>`;
+    });
+    if (typing) out.push(`<div class="m ${prev === "bot" ? "cont" : ""}">${APP_AV()}<div>${prev === "bot" ? "" : `<div class="meta"><b>Order Assistant</b></div>`}<div class="bub typing" aria-label="Order Assistant is typing"><span></span><span></span><span></span></div></div></div>`);
+    return out.join("");
+  }
+
+  function badge(status) {
+    const map = { open: ["open", "In progress"], resolved: ["ok", "Resolved"], escalated: ["warn", "Escalated"] };
+    const [cls, t] = map[status];
+    return `<span class="badge ${cls}">${t}</span>`;
+  }
+
+  function renderBot(m, i) {
+    const c = m.issue;
+    switch (m.kind) {
+      case "text":
+        return `<div class="bub">${esc(m.text)}</div>`;
+      case "trace":
+        return `<div class="bub trace"><ul>${m.items.map(t => `<li class="${t.run ? "run" : ""}">${esc(t.text)}</li>`).join("")}</ul></div>`;
+      case "welcome":
+        return `<div class="ac"><div class="ac-sec">
+            <h4>Tell me what's wrong with the order</h4>
+            <p>Include the order number if you have it. It's on the pick ticket, for example <span class="mono">SO-100437</span>. I'll check SAP and Deposco and tell you how to fix it.</p>
+          </div>
+          <div class="ac-actions stack">${m.options.map(o => `<button type="button" class="btn" data-act="say" data-say="${esc(o.say)}">${esc(o.label)}</button>`).join("")}</div></div>`;
+      case "diagnosis": {
+        const canEsc = c && c.status === "open";
+        return `<div class="ac">
+          <div class="ac-sec attn"><div class="hrow"><div><div class="sub">Diagnosis</div><h3>${esc(m.title)}</h3></div><span class="badge bad">${esc(m.sev)}</span></div>
+            <div class="small">${esc(m.item)}</div></div>
+          <div class="tbl"><table>
+            <thead><tr><th scope="col">Field</th><th scope="col">SAP</th><th scope="col">Deposco</th><th scope="col"><span hidden>Match</span></th></tr></thead>
+            <tbody>${m.rows.map(r => `<tr class="${r[3] ? "diff" : ""}"><td>${esc(r[0])}</td><td class="v">${esc(r[1]).replace(/\n/g, "<br>")}</td><td class="v wms">${esc(r[2]).replace(/\n/g, "<br>")}</td>
+              <td class="flag" aria-label="${r[3] ? "Mismatch" : "Match"}">${r[3] ? "≠" : "="}</td></tr>`).join("")}</tbody>
+          </table></div>
+          <div class="ac-sec"><div class="sub">Why it happened</div><p>${esc(m.cause)}</p>
+            <dl class="facts"><dt>Who can fix it</dt><dd>${esc(m.owner)}</dd></dl></div>
+          <div class="ac-actions"><button type="button" class="btn" data-act="escalate" data-issue="${c.id}" ${canEsc ? "" : "disabled"}>${c.status === "escalated" ? "Escalated" : "Escalate"}</button></div>
+        </div>`;
+      }
+      case "action":
+        return `<div class="ac"><div class="ac-sec good"><h4>✓ ${esc(m.title)}</h4><p>${esc(m.detail)}</p><span class="small">Simulated assistant action</span></div></div>`;
+      case "steps":
+        return `<div class="ac"><div class="ac-sec"><div class="sub">Steps to fix</div><h3>${esc(m.title)}</h3></div>
+          <ol class="steps">${m.items.map((s, si) => {
+            const id = `chk-${i}-${si}`;
+            return `<li class="${s.done ? "done" : ""}"><label for="${id}"><input type="checkbox" id="${id}" data-msg="${i}" data-step="${si}" ${s.done ? "checked" : ""}>
+              <span class="txt"><span class="wh ${s.who === "You" ? "you" : ""}">${si + 1}. ${esc(s.who)}</span><span class="main-t">${esc(s.text)}</span>${s.where ? `<span class="where">${esc(s.where)}</span>` : ""}</span></label></li>`;
+          }).join("")}</ol></div>`;
+      case "ticket":
+        return `<div class="ac"><div class="ac-sec warn"><div class="hrow"><div><div class="sub">Escalated · <span class="mono">${esc(m.id)}</span></div><h3>Posted to ${esc(CHANNELS[m.chId].name)}</h3></div>${badge("escalated")}</div>
+            <p>${esc(m.text)} Their reply will appear in this chat.</p>
+            <dl class="facts"><dt>Team</dt><dd>Warehouse support › ${esc(CHANNELS[m.chId].name)}</dd><dt>Priority</dt><dd>${esc(m.priority)}</dd></dl></div>
+          <div class="ac-actions"><button type="button" class="btn" data-act="open-post" data-ch="${m.chId}" data-post="${m.id}">Open post</button></div></div>`;
+      case "update":
+        return `<div class="ac"><div class="ac-sec good"><div class="hrow"><div><div class="sub">Update on <span class="mono">${esc(m.id)}</span> · <span class="mono">${esc(m.order)}</span></div><h3>Fixed by ${esc(m.who)}</h3></div>${badge("resolved")}</div>
+            <p class="quote">${esc(m.reply)}</p></div>
+          <div class="ac-sec"><dl class="facts"><dt>Next</dt><dd>${esc(m.next)}</dd></dl><span class="small">I've marked the issue as resolved and added it to the fix log.</span></div></div>`;
+    }
+    return "";
+  }
+
+  function renderIssues() {
+    const rows = [...issues].reverse().filter(c => c.order);
+    return `<div class="page"><h2>Your issues</h2><p>Every problem you've reported in this chat, newest first.</p>
+      <div class="panel"><table><thead><tr><th>Order</th><th>Problem</th><th>Status</th><th>Started</th></tr></thead><tbody>
+      ${rows.map(c => `<tr><td class="mono">${esc(c.order.no)}</td><td>${esc(LABELS[c.order.scenario])}${c.ticket ? ` · <span class="mono">${esc(c.ticket)}</span>` : ""}</td><td>${badge(c.status)}</td><td>${esc(c.when)}</td></tr>`).join("")}
+      </tbody></table></div></div>`;
+  }
+
+  function renderAbout() {
+    return `<div class="page"><div style="display:flex;gap:12px;align-items:center">${APP_AV()}<div><h2 style="margin:0">Order Assistant</h2><div class="small" style="color:var(--t-ink-3);font-size:12px">Gerber<span style="font-size:.6em;vertical-align:.5em">®</span> Childrenswear · internal app</div></div></div>
+      <p>Diagnoses orders stuck between SAP and Deposco. Tell it what's wrong on the floor and it compares both systems, explains the mismatch and gives you the steps to fix it. If someone else has to fix it, it posts the ticket to their channel and brings their reply back here.</p>
+      <p><b>This is a prototype.</b> All orders, SKUs, customers and answers are fictional and scripted. Nothing connects to SAP or Deposco, and nothing is sent to real channels.</p></div>`;
+  }
+
+  function renderDayShift() {
+    const msgs = [
+      ["Shift lead", "SL", "06:52", "Morning all. Truck 2 is at dock 6 for the 15:00 UPS pickup."],
+      ["Receiving", "RC", "07:10", "36 EA of the pink ruffle bodysuits went to QA-HOLD-01 on Monday. Still waiting on Quality."]
+    ];
+    return `<div class="divider">Today</div>` + msgs.map(([who, ini, t, text]) =>
+      `<div class="m"><span class="av">${ini}</span><div><div class="meta"><b>${who}</b>${t}</div><div class="bub">${esc(text)}</div></div></div>`).join("") +
+      `<div class="note-bar" style="margin-top:20px">Group chat shown for context. It isn't part of the prototype.</div>`;
+  }
+
+  function renderChannel(k) {
+    const ch = CHANNELS[k];
+    if (!ch.posts.length) return `<div class="empty-state">No escalations in ${esc(ch.name)} yet.<br>Escalate an issue from the Order Assistant chat to see one here.</div>`;
+    return ch.posts.map(p => {
+      const status = p.fixed ? `<span class="badge ok">Fixed</span>` : p.assigned ? `<span class="badge open">Assigned</span>` : `<span class="badge warn">New</span>`;
+      const steps = p.steps.length ? p.steps.map(s => `${s.done ? "☑" : "☐"} ${esc(s.text)}`).join("<br>") : "None yet";
+      return `<article class="post" id="post-${p.id}"><div class="post-main">${APP_AV()}<div>
+          <div class="meta"><b>Order Assistant</b><span class="tag">App</span>${esc(p.when || p.time)}</div>
+          <div class="ac"><div class="ac-sec warn"><div class="hrow"><div><div class="sub">Escalation · <span class="mono">${esc(p.id)}</span> · ${esc(p.priority)} priority</div>
+              <h3>${esc(p.diag)}</h3></div>${status}</div>
+              <div class="small"><span class="mono">${esc(p.order)}</span> · ${esc(p.customer)} · ${esc(p.ship)}</div></div>
+            <div class="ac-sec"><dl class="facts">
+              <dt>Reported by</dt><dd>Warehouse, day shift (via Order Assistant)</dd>
+              <dt>They saw</dt><dd>"${esc(p.saw)}"</dd>
+              <dt>Request</dt><dd>${esc(p.ask)}</dd>
+              ${p.assigned ? `<dt>Assigned to</dt><dd>${esc(p.assigned)}</dd>` : ""}
+            </dl>
+            ${p.cause ? `<p class="small">${esc(p.cause)}</p>` : ""}
+            <div class="small">${steps}</div></div>
+            <div class="ac-actions">
+              <button type="button" class="btn" data-act="assign" data-ch="${k}" data-post="${p.id}" ${p.assigned || p.fixed ? "disabled" : ""}>Assign to me</button>
+              <button type="button" class="btn pri" data-act="fix" data-ch="${k}" data-post="${p.id}" ${p.fixed ? "disabled" : ""}>Mark fixed</button>
+            </div></div>
+        </div></div>
+        ${p.replies.length ? `<div class="replies">${p.replies.map(r => `<div class="reply"><span class="av sm">${esc(r.initials)}</span><div><div class="meta"><b>${esc(r.who)}</b>${esc(r.time)}</div><p>${esc(r.text)}</p></div></div>`).join("")}
+          <div class="reply-box">Reply</div></div>` : `<div class="replies"><div class="reply-box">Reply</div></div>`}
+      </article>`;
+    }).join("");
+  }
+
+  // ---------- Escalation dialog ----------
+  let escIssue = null;
+  function openEscalate(c) {
+    escIssue = c;
+    const o = c.order, d = c.diag, sc = SCEN[o.scenario];
+    const steps = thread.filter(m => m.issue === c && m.kind === "steps").flatMap(m => m.items);
+    const done = steps.filter(s => s.done).map(s => "  [x] " + s.text);
+    const notDone = steps.filter(s => !s.done).map(s => "  [ ] " + s.text);
+    $("esc-team").value = sc.team;
+    $("esc-pri").value = o.today ? "High" : "Normal";
+    $("esc-body").value =
+`Order: ${o.no} (${o.customer})
+Ship date: ${o.ship}
+Reported by: Warehouse, day shift
+
+What the warehouse saw:
+  "${c.first || LABELS[o.scenario]}"
+
+Diagnosis: ${d ? d.title : LABELS[o.scenario]}
+${d ? d.cause : ""}
+
+Steps:
+${[...done, ...notDone].join("\n") || "  None yet"}
+
+Request:
+  ${sc.ask}`;
+    $("esc-scrim").hidden = false;
+    const body = $("esc-body");
+    body.focus();
+    body.setSelectionRange(0, 0);
+    body.scrollTop = 0;
+  }
+  function cancelEscalate() {
+    const c = escIssue;
+    $("esc-scrim").hidden = true;
+    if (!c || c.pending) return;
+    if (c.status === "open") { c.halt = false; say(c, "Not sent. Select Escalate on the diagnosis card when you're ready.", 300); }
+  }
+  $("esc-send").addEventListener("click", () => {
+    $("esc-scrim").hidden = true;
+    createTicket(escIssue, $("esc-team").value, $("esc-pri").value);
+  });
+
+  // ---------- Navigation ----------
+  function openTarget(t) {
+    ui.view = "chat";
+    ui.open = t;
+    ui.convOpen = true;
+    if (t === "bot") { botUnread = 0; }
+    if (t.startsWith("ch:")) CHANNELS[t.slice(3)].unread = 0;
+    draw(true);
+    if (t === "bot" && ui.tab === "chat" && !narrow.matches) $("input").focus({ preventScroll: true });
+  }
+
+  document.addEventListener("click", e => {
+    const t = e.target.closest("[data-act]");
+    if (!t || t.disabled) return;
+    const a = t.dataset.act;
+    if (a === "say") { if (ui.open !== "bot") openTarget("bot"); userSays(t.dataset.say); }
+    else if (a === "open") { $("toast-wrap").innerHTML = ""; if (ui.open === "bot" && t.dataset.target === "bot") ui.tab = "chat"; openTarget(t.dataset.target); }
+    else if (a === "tab") { ui.tab = t.dataset.tab; draw(true); }
+    else if (a === "back") { ui.convOpen = false; draw(); }
+    else if (a === "nav") {
+      const v = t.dataset.view;
+      if (v === "calendar" || v === "apps") { toast("Prototype", `${v === "calendar" ? "Calendar" : "Apps"} isn't part of this prototype.`); return; }
+      ui.view = v; ui.convOpen = false; draw();
+    }
+    else if (a === "activity") {
+      const it = activity[+t.dataset.i];
+      it.unread = false;
+      ui.tab = "chat";
+      openTarget("bot");
+    }
+    else if (a === "escalate") { const c = issues.find(i => i.id === t.dataset.issue); if (c) openEscalate(c); }
+    else if (a === "open-post") { ui.flashPost = t.dataset.post; openTarget("ch:" + t.dataset.ch); }
+    else if (a === "assign" || a === "fix") {
+      const p = CHANNELS[t.dataset.ch].posts.find(x => x.id === t.dataset.post);
+      p.ch = t.dataset.ch;
+      a === "assign" ? assign(p) : markFixed(p);
+    }
+    else if (a === "esc-cancel") cancelEscalate();
+    else if (a === "guide") { $("guide-scrim").hidden = false; $("guide-scrim").querySelector(".x").focus(); }
+    else if (a === "guide-close") $("guide-scrim").hidden = true;
+  });
+
+  $("feed-inner").addEventListener("change", e => {
+    const t = e.target;
+    if (t.type !== "checkbox") return;
+    const m = thread[+t.dataset.msg];
+    m.items[+t.dataset.step].done = t.checked;
+    t.closest("li").classList.toggle("done", t.checked);
+  });
+
+  const input = $("input");
+  $("composer").addEventListener("submit", e => {
+    e.preventDefault();
+    const v = input.value.trim();
+    if (!v) return;
+    input.value = ""; grow();
+    userSays(v);
+  });
+  input.addEventListener("keydown", e => {
+    if (e.key === "Enter" && !e.shiftKey && !e.isComposing) { e.preventDefault(); $("composer").requestSubmit(); }
+  });
+  function grow() { input.style.height = "auto"; input.style.height = Math.min(input.scrollHeight, 140) + "px"; }
+  input.addEventListener("input", grow);
+
+  document.addEventListener("keydown", e => {
+    if (e.key !== "Escape") return;
+    if (!$("guide-scrim").hidden) $("guide-scrim").hidden = true;
+    else if (!$("esc-scrim").hidden) cancelEscalate();
+  });
+  for (const s of ["esc-scrim", "guide-scrim"]) {
+    $(s).addEventListener("click", e => { if (e.target.id === s) s === "esc-scrim" ? cancelEscalate() : ($("guide-scrim").hidden = true); });
+  }
+  narrow.addEventListener("change", () => draw());
+
+  $("guide-rows").innerHTML = Object.keys(DEMO).map(k => {
+    const o = ORDERS[DEMO[k]];
+    const why = { missing: "Outbound IDoc failed (status 51)", short: "Stock on inspection hold in Deposco", uom: "Pack unit missing in Deposco item master", changed: "Order changed in SAP after wave release", address: "Postal code corrected in SAP only" }[k];
+    return `<tr><td class="mono">${o.no}</td><td>${LABELS[k]}</td><td>${why}</td></tr>`;
+  }).join("");
+
+  // ---------- Seed history ----------
+  const seeded = (no, status, when, ticket) => {
+    const c = newIssue(LABELS[ORDERS[no].scenario]);
+    Object.assign(c, { order: ORDERS[no], status, when, ticket });
+  };
+  seeded("SO-100402", "resolved", "Mon 14:22");
+  seeded("SO-100388", "resolved", "Yesterday 10:05", "WH-2417");
+  seeded("SO-100391", "resolved", "Yesterday 16:40");
+
+  CHANNELS.quality.posts.push({
+    id: "WH-2417", ch: "quality", issueId: issues[1].id, when: "Yesterday 10:09", priority: "Normal",
+    order: "SO-100388", customer: "Cedar & Clover Baby", ship: "Ships 2 Oct", saw: "SO-100388 won't allocate, line 10 is short",
+    diag: "Stock is on an inspection hold in Deposco", cause: "",
+    ask: "Please release the inspection hold on 24 EA of 2210-3M-PNK in QA-HOLD-01 so the order can allocate.",
+    steps: [{ text: "Go to QA-HOLD-01 and confirm the cartons.", done: true }, { text: "Check each carton for an inspection tag.", done: true }],
+    assigned: "Quality on-call", fixed: true,
+    replies: [
+      { who: "Quality on-call", initials: "QA", time: "Yesterday 10:20", text: "I'm on it." },
+      { who: "Quality on-call", initials: "QA", time: "Yesterday 11:47", text: "Released the hold on 24 EA in QA-HOLD-01. All cartons had green tags." }
+    ]
+  });
+
+  push({ kind: "divider", text: "Yesterday" });
+  push({ role: "bot", kind: "update", time: "11:48", id: "WH-2417", order: "SO-100388", who: "Quality on-call",
+    reply: "Released the hold on 24 EA in QA-HOLD-01. All cartons had green tags.", next: "Re-allocate SO-100388 from its wave." });
+  activity.push({ title: "Order Assistant", text: "Update on WH-2417: Quality on-call fixed it", time: "Yesterday", unread: false });
+  push({ kind: "divider", text: "Today" });
+  push({
+    role: "bot", kind: "welcome",
+    options: [
+      { label: "SO-100437 won't allocate", say: "SO-100437 won't allocate" },
+      { label: "Can't find SO-100412 in Deposco", say: "Can't find SO-100412 in Deposco" },
+      { label: "Pick qty looks wrong on SO-100455", say: "Pick qty looks wrong on SO-100455, it says 10 each" },
+      { label: "Packing slip doesn't match SO-100468", say: "Packing slip doesn't match SO-100468" },
+      { label: "Label won't print for SO-100479", say: "Label won't print for SO-100479" },
+      { label: "Label won't print (no order number)", say: "The shipping label won't print" }
+    ]
+  });
+
+  ui.convOpen = !narrow.matches;
+  draw(true);
+})();
+</script>
+</body>
+</html>
