@@ -6,7 +6,9 @@ The prototype exists to align on the end-state experience before the real agent 
 
 ## Run it
 
-Open `index.html` in any modern browser. It's a single file with no build step and no backend. It loads fonts from Google Fonts and falls back to system fonts when offline.
+**Live:** https://cjensen-gerber.github.io/UI-prototype/ (GitHub Pages, served from `main`, public link)
+
+To run it locally, open `index.html` in any modern browser. It's a single file with no build step and no backend. It loads fonts from Google Fonts and falls back to system fonts when offline.
 
 ## Demo script
 
