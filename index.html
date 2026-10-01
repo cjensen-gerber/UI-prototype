@@ -15,6 +15,7 @@
   --gcw-navy: #002744;
   --gcw-navy-70: #2F4E65;
   --gcw-cream: #F9F5F3;
+  --gcw-white: #FFFFFF;
   --gcw-mist: #F2F4F8;
   --gcw-jordy: #85B7EA;
   --gcw-jordy-tint: #CEE2F7;
@@ -24,11 +25,13 @@
   --gcw-geraldine-tint: #FCE8E6;
   --gcw-seanymph: #86B3A1;
   --gcw-seanymph-tint: #E7F0EC;
+  --gcw-sandy: #F4A261;
+  --gcw-sandy-tint: #FDECDF;
   --gcw-sale: #C4301C;
 
   /* App tokens */
   --bg: var(--gcw-cream);
-  --panel: #FFFFFF;
+  --panel: var(--gcw-white);
   --panel-2: var(--gcw-mist);
   --sunk: #E9EDF2;
   --ink: var(--gcw-navy);
@@ -44,10 +47,17 @@
   --warn-soft: var(--gcw-maize-tint);
   --bad: var(--gcw-sale);
   --bad-soft: var(--gcw-geraldine-tint);
+  --info: var(--gcw-navy);
+  --info-soft: var(--gcw-jordy-tint);
+  --head-bg: var(--gcw-navy);
+  --head-ink: var(--gcw-cream);
+  --head-chip: var(--gcw-navy-70);
+  --scrim: rgba(0, 39, 68, .5);
   --hivis: var(--gcw-maize);
   --hivis-ink: var(--gcw-navy);
   --shadow: 0 1px 2px rgba(0, 39, 68, .05), 0 6px 18px rgba(0, 39, 68, .07);
   --radius-tool: 6px;
+  --leading-body: 1.575;
   --display: "Montserrat", "Helvetica Neue", Arial, system-ui, sans-serif;
   --body: "Montserrat", "Helvetica Neue", Arial, system-ui, sans-serif;
   --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
@@ -72,6 +82,12 @@
     --warn-soft: #33290F;
     --bad: var(--gcw-geraldine);
     --bad-soft: #3A1F22;
+    --info: var(--gcw-jordy);
+    --info-soft: #152E47;
+    --head-bg: #061321;
+    --head-ink: #F3EEEA;
+    --head-chip: #12263A;
+    --scrim: rgba(0, 0, 0, .6);
     --hivis: var(--gcw-maize);
     --hivis-ink: var(--gcw-navy);
     --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 6px 18px rgba(0, 0, 0, .3);
@@ -96,6 +112,12 @@
   --warn-soft: #33290F;
   --bad: var(--gcw-geraldine);
   --bad-soft: #3A1F22;
+  --info: var(--gcw-jordy);
+  --info-soft: #152E47;
+  --head-bg: #061321;
+  --head-ink: #F3EEEA;
+  --head-chip: #12263A;
+  --scrim: rgba(0, 0, 0, .6);
   --hivis: var(--gcw-maize);
   --hivis-ink: var(--gcw-navy);
   --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 6px 18px rgba(0, 0, 0, .3);
@@ -108,13 +130,15 @@ body {
   margin: 0;
   background: var(--bg);
   color: var(--ink);
-  font: 15px/1.5 var(--body);
+  font: 15px/var(--leading-body) var(--body);
   -webkit-font-smoothing: antialiased;
 }
 button, input, select, textarea { font: inherit; color: inherit; }
 button { cursor: pointer; }
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+.top :focus-visible { outline-color: var(--gcw-jordy); }
 .mono { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+.gcw-tm { font-size: .5em; vertical-align: .35em; line-height: 0; display: inline-block; }
 
 /* ---------- Shell ---------- */
 .app { height: 100%; display: grid; grid-template-rows: auto auto 1fr; }
@@ -143,8 +167,9 @@ button { cursor: pointer; }
 .top {
   display: flex; align-items: center; gap: 16px;
   padding: 10px 16px;
-  background: var(--panel);
-  border-bottom: 1px solid var(--line);
+  background: var(--head-bg);
+  color: var(--head-ink);
+  border-bottom: 1px solid var(--head-chip);
 }
 .brand { display: flex; align-items: center; gap: 10px; min-width: 0; }
 .mark {
@@ -152,21 +177,25 @@ button { cursor: pointer; }
   background: var(--accent); color: var(--accent-ink);
   display: grid; place-items: center;
 }
+.brand > div { min-width: 0; }
+.brand .eyebrow {
+  display: block; font: 600 11px/1.2 var(--display); letter-spacing: .05em; text-transform: uppercase;
+}
 .brand h1 {
-  margin: 0; font: 400 19px/1.15 var(--display);
+  margin: 2px 0 0; font: 400 20px/1.15 var(--display);
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
-.brand small { display: block; font: 400 12px/1.2 var(--body); color: var(--ink-3); }
+.brand small { display: block; margin-top: 2px; font: 400 12px/1.2 var(--body); opacity: .8; }
 .systems { margin-left: auto; display: flex; gap: 8px; flex-wrap: wrap; }
 .sys {
   display: inline-flex; align-items: center; gap: 6px;
-  font: 500 12px/1 var(--body); color: var(--ink-2);
-  padding: 6px 10px; border: 1px solid var(--line); border-radius: var(--radius-tool); background: var(--panel-2);
+  font: 500 12px/1 var(--body); color: var(--head-ink);
+  padding: 6px 10px; border-radius: var(--radius-tool); background: var(--head-chip);
 }
-.sys i { width: 7px; height: 7px; border-radius: 50%; background: var(--ok); }
-.sys .mono { color: var(--ink-3); font-size: 11px; }
+.sys i { width: 7px; height: 7px; border-radius: 50%; background: var(--gcw-seanymph); }
+.sys .mono { opacity: .8; font-size: 11px; }
 .hist-btn {
-  display: none; border: 1px solid var(--line); background: var(--panel-2);
+  display: none; border: 1px solid currentColor; background: transparent; color: var(--head-ink); min-height: 36px;
   border-radius: var(--radius-tool); padding: 6px 10px; font-size: 13px; font-weight: 500;
 }
 
@@ -194,7 +223,7 @@ button { cursor: pointer; }
   grid-template-columns: 1fr auto;
 }
 .conv:hover { background: var(--panel-2); }
-.conv[aria-current="true"] { background: var(--accent-soft); border-color: transparent; }
+.conv[aria-current="true"] { background: var(--info-soft); border-color: transparent; box-shadow: inset 3px 0 0 var(--info); }
 .conv .no { font: 500 13px/1.2 var(--mono); }
 .conv .what { grid-column: 1 / -1; font-size: 13px; color: var(--ink-2); line-height: 1.35; }
 .conv .when { grid-column: 1 / -1; font-size: 12px; color: var(--ink-3); }
@@ -202,10 +231,10 @@ button { cursor: pointer; }
 .pill {
   display: inline-flex; align-items: center; gap: 5px; white-space: nowrap;
   font: 600 11px/1 var(--body); letter-spacing: .02em;
-  padding: 4px 8px; border-radius: 3px;
+  padding: 4px 8px; border-radius: var(--radius-tool);
 }
 .pill::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
-.pill.open { background: var(--accent-soft); color: var(--accent); }
+.pill.open { background: var(--info-soft); color: var(--info); }
 .pill.resolved { background: var(--ok-soft); color: var(--ok); }
 .pill.escalated { background: var(--warn-soft); color: var(--warn); }
 
@@ -252,7 +281,8 @@ button { cursor: pointer; }
 .chip:hover:not(:disabled) { background: var(--accent-soft); }
 .chip:disabled { cursor: default; border-color: var(--line); color: var(--ink-3); background: transparent; }
 .chip.chosen:disabled { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); }
-.chip.try { border-style: dashed; }
+.chip.try { border-color: transparent; background: var(--info-soft); color: var(--info); }
+.chip.try:hover:not(:disabled) { border-color: var(--info); }
 .chip .mono { font-size: 13px; }
 
 /* tool trace */
@@ -275,9 +305,10 @@ button { cursor: pointer; }
   display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; flex-wrap: wrap;
   padding: 14px 16px 12px; border-bottom: 1px solid var(--line);
 }
+.card.diag .card-head { background: var(--bad-soft); border-bottom-color: transparent; }
 .card-head h3 { margin: 4px 0 0; font: 400 20px/1.25 var(--display); text-wrap: balance; }
 .card-head .item { margin-top: 4px; font-size: 13px; color: var(--ink-2); }
-.sev { background: var(--bad-soft); color: var(--bad); }
+.sev { background: var(--panel); color: var(--bad); }
 .tbl-wrap { overflow-x: auto; }
 table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
 th, td { text-align: left; padding: 8px 16px; border-bottom: 1px solid var(--line); vertical-align: top; }
@@ -311,7 +342,7 @@ ol.steps input { width: 18px; height: 18px; margin: 2px 0 0; accent-color: var(-
 ol.steps .txt { display: grid; gap: 4px; }
 ol.steps .who {
   justify-self: start; font: 600 10px/1 var(--display); letter-spacing: .05em; text-transform: uppercase;
-  padding: 3px 6px; border-radius: 4px; background: var(--sunk); color: var(--ink-2);
+  padding: 3px 6px; border-radius: var(--radius-tool); background: var(--sunk); color: var(--ink-2);
 }
 ol.steps .who.you { background: var(--accent-soft); color: var(--accent); }
 ol.steps .where { font: 400 12.5px/1.4 var(--mono); color: var(--ink-3); overflow-wrap: anywhere; }
@@ -345,7 +376,7 @@ ol.steps li.done .main-t { color: var(--ink-3); text-decoration: line-through; t
 
 /* modal */
 .scrim {
-  position: fixed; inset: 0; background: rgba(10, 16, 22, .5);
+  position: fixed; inset: 0; background: var(--scrim);
   display: grid; place-items: center; padding: 16px; z-index: 20;
 }
 .modal {
@@ -353,6 +384,8 @@ ol.steps li.done .main-t { color: var(--ink-3); text-decoration: line-through; t
   background: var(--panel); border-radius: var(--radius-tool); box-shadow: var(--shadow); border: 1px solid var(--line);
 }
 .modal header { padding: 16px 20px 12px; border-bottom: 1px solid var(--line); }
+#esc-scrim .modal header { background: var(--warn-soft); border-bottom-color: transparent; }
+.guide .modal header { background: var(--info-soft); border-bottom-color: transparent; }
 .modal header h2 { margin: 0; font: 400 22px/1.25 var(--display); }
 .modal header p { margin: 4px 0 0; font-size: 13px; color: var(--ink-2); }
 .modal .body { padding: 16px 20px; display: grid; gap: 14px; }
@@ -409,10 +442,8 @@ ol.steps li.done .main-t { color: var(--ink-3); text-decoration: line-through; t
   <header class="top">
     <button type="button" class="hist-btn" id="hist-btn" aria-controls="side" aria-expanded="false">Issues</button>
     <div class="brand">
-      <div class="mark" aria-hidden="true">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M3 8l9-5 9 5v8l-9 5-9-5z" fill="none"/><path d="M3 8l9 5 9-5M12 13v8" fill="none"/></svg>
-      </div>
       <div>
+        <span class="eyebrow">Gerber<span class="gcw-tm">®</span> Childrenswear</span>
         <h1>Warehouse Order Assistant</h1>
         <small>Diagnoses orders stuck between SAP and Deposco</small>
       </div>
@@ -966,7 +997,7 @@ ol.steps li.done .main-t { color: var(--ink-3); text-decoration: line-through; t
         return `<div class="trace"><span class="label">What I checked</span><ul>${m.items.map(t =>
           `<li class="${t.run ? "run" : ""}">${esc(t.text)}</li>`).join("")}</ul></div>`;
       case "diagnosis":
-        return `<div class="card">
+        return `<div class="card diag">
           <div class="card-head">
             <div><span class="label">Diagnosis</span><h3>${esc(m.title)}</h3><div class="item">${esc(m.item)}</div></div>
             <span class="pill sev">${esc(m.sev)}</span>
