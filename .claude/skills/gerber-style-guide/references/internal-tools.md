@@ -46,10 +46,12 @@ Dark mode is defined in `tokens.css` and follows the OS setting unless `data-the
 
 ## The Warehouse Order Assistant (`index.html`)
 
-The prototype follows this guide (applied 2026-10-01). Use it as the reference for how the guide looks in a working tool.
+The prototype follows this guide (applied 2026-10-01, with a second, more visible brand pass the same day). Use it as the reference for how the guide looks in a working tool.
 
 - The tokens are inlined at the top of its `<style>`, because GitHub Pages doesn't serve the `.claude/` folder. If you change `tokens.css`, copy the change there too.
 - Montserrat is used throughout. Headings are 400, and labels are uppercase 600 with 0.05em tracking. IBM Plex Mono is used for order numbers, SKUs, IDocs and bin locations.
 - Primary buttons (New issue, Send, Send escalation) are square, navy and uppercase. Chips, cards and inputs use the 6px tool radius.
 - The prototype banner uses the Maize solid with navy text.
+- The header is the navy inverse section with cream text. It carries a text wordmark, "Gerber® Childrenswear", as an eyebrow above the tool name. There's no logo file.
+- Pastel tints mark areas, one family each: Jordy for suggestions, the active issue and the demo guide; Geraldine for the diagnosis card head; Maize for the escalation modal head; Seanymph for resolved actions.
 - Mock items follow the Gerber product-name pattern.
