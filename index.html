@@ -156,12 +156,12 @@ button { cursor: pointer; }
   .proto-short { display: inline; }
   .proto { gap: 8px; font-size: 11px; letter-spacing: .02em; flex-wrap: nowrap; padding-inline: 12px; }
   .proto b { letter-spacing: .05em; }
-  .proto button { white-space: nowrap; padding-inline: 8px; }
+  .proto button, .proto a { white-space: nowrap; padding-inline: 8px; }
 }
 .proto b { font-family: var(--display); font-weight: 600; letter-spacing: .05em; text-transform: uppercase; }
-.proto button {
+.proto button, .proto a {
   background: transparent; border: 1px solid currentColor; border-radius: 0;
-  padding: 2px 10px; font-size: 11px; font-weight: 600; color: inherit; text-transform: uppercase; letter-spacing: .02em;
+  padding: 2px 10px; font-size: 11px; font-weight: 600; color: inherit; text-transform: uppercase; letter-spacing: .02em; text-decoration: none;
 }
 
 .top {
@@ -435,8 +435,9 @@ ol.steps li.done .main-t { color: var(--ink-3); text-decoration: line-through; t
   <div class="proto" role="note">
     <b>Prototype</b>
     <span class="proto-long">Mock orders and scripted answers. Not connected to SAP or Deposco.</span>
-    <span class="proto-short">Mock data, scripted answers</span>
+    <span class="proto-short">Mock data</span>
     <button type="button" id="guide-open">Demo guide</button>
+    <a href="teams.html">Teams version</a>
   </div>
 
   <header class="top">

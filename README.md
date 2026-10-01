@@ -10,6 +10,17 @@ The prototype exists to align on the end-state experience before the real agent 
 
 To run it locally, open `index.html` in any modern browser. It's a single file with no build step and no backend. It loads fonts from Google Fonts and falls back to system fonts when offline.
 
+## Teams version
+
+`teams.html` shows the same assistant as a Microsoft Teams app. It's live at https://cjensen-gerber.github.io/UI-prototype/teams.html, and the banner on each page links to the other version. It uses the same five mock orders and scripts, plus what Teams adds:
+
+- A 1:1 chat with the **Order Assistant** app. Answers are Adaptive Card-style cards, and the assistant's questions come with suggested replies above the message box.
+- Escalations open a Teams dialog and post a card to the owner team's channel under **Warehouse support** (Quality holds, SAP order support, Deposco admin, Shift leads).
+- Open that channel to play the system owner. **Assign to me** and **Mark fixed** send updates back to the warehouse user's chat, Activity feed and a notification.
+- Under 700px wide it switches to a Teams mobile layout with bottom navigation.
+
+Teams controls fonts and colors inside the client and in cards, so the Gerber brand shows only through the app icon, name, copy and the prototype banner. The Teams chrome is a neutral look-alike with no Microsoft logos.
+
 ## Demo script
 
 Type one of these, or tap the suggestions on the start screen. The **Demo guide** button in the yellow banner shows the same list.
