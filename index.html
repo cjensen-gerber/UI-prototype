@@ -158,6 +158,12 @@ button { cursor: pointer; }
   .proto b { letter-spacing: .05em; }
   .proto button, .proto a { white-space: nowrap; padding-inline: 8px; }
 }
+.proto .lbl-short { display: none; }
+@media (max-width: 420px) {
+  .proto-short { display: none; }
+  .proto .lbl-long { display: none; }
+  .proto .lbl-short { display: inline; }
+}
 .proto b { font-family: var(--display); font-weight: 600; letter-spacing: .05em; text-transform: uppercase; }
 .proto button, .proto a {
   background: transparent; border: 1px solid currentColor; border-radius: 0;
@@ -404,6 +410,18 @@ ol.steps li.done .main-t { color: var(--ink-3); text-decoration: line-through; t
 .guide table td:first-child { width: auto; }
 .guide .body > p { margin: 0; font-size: 14px; color: var(--ink-2); }
 
+/* how to use */
+.help-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.help-list li { display: grid; grid-template-columns: 132px 1fr; gap: 12px; align-items: baseline; font-size: 14px; line-height: 1.5; }
+.help-list b { font: 600 11px/1.5 var(--display); letter-spacing: .05em; text-transform: uppercase; color: var(--ink-3); }
+.help-list .mono { font-size: 13px; }
+.help-note { margin: 0; padding: 10px 12px; border-radius: var(--radius-tool); background: var(--info-soft); color: var(--ink); font-size: 14px; }
+.modal footer a { color: var(--accent); font-weight: 600; font-size: 13px; }
+#help-scrim .modal footer { position: sticky; bottom: 0; background: var(--panel); border-top: 1px solid var(--line); }
+@media (max-width: 520px) {
+  .help-list li { grid-template-columns: 1fr; gap: 2px; }
+}
+
 /* ---------- Responsive ---------- */
 @media (max-width: 820px) {
   .main { grid-template-columns: 1fr; }
@@ -436,8 +454,9 @@ ol.steps li.done .main-t { color: var(--ink-3); text-decoration: line-through; t
     <b>Prototype</b>
     <span class="proto-long">Mock orders and scripted answers. Not connected to SAP or Deposco.</span>
     <span class="proto-short">Mock data</span>
-    <button type="button" id="guide-open">Demo guide</button>
-    <a href="teams.html">Teams version</a>
+    <button type="button" id="help-open" aria-label="How to use"><span class="lbl-long">How to use</span><span class="lbl-short" aria-hidden="true">Help</span></button>
+    <button type="button" id="guide-open" aria-label="Demo guide"><span class="lbl-long">Demo guide</span><span class="lbl-short" aria-hidden="true">Demo</span></button>
+    <a href="teams.html" aria-label="Teams version"><span class="lbl-long">Teams version</span><span class="lbl-short" aria-hidden="true">Teams</span></a>
   </div>
 
   <header class="top">
@@ -535,6 +554,29 @@ ol.steps li.done .main-t { color: var(--ink-3); text-decoration: line-through; t
       <p>Describe the problem without an order number to see the clarifying questions. The inventory hold scenario (SO-100437) needs the Quality team, so it shows the escalation flow.</p>
     </div>
     <footer><button type="button" class="btn-1" id="guide-close">Close</button></footer>
+  </div>
+</div>
+
+<div class="scrim guide" id="help-scrim" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="help-title" aria-describedby="help-intro" tabindex="-1">
+    <header>
+      <h2 id="help-title">How to use the assistant</h2>
+      <p id="help-intro">Use it when an order won't drop, allocate, pick, pack or ship, or when SAP and Deposco seem to disagree.</p>
+    </header>
+    <div class="body">
+      <ul class="help-list">
+        <li><b>Start</b><span>Type the order number (<span class="mono">SO-…</span>) and what you see. Or just describe the problem and it will ask.</span></li>
+        <li><b>Answer</b><span>Tap a suggested reply or type your own.</span></li>
+        <li><b>Diagnosis</b><span>SAP is on the left, Deposco on the right. Rows marked ≠ are the mismatch. "Why it happened" explains it, and "Who can fix it" says who acts.</span></li>
+        <li><b>Steps</b><span>Each step says who does it. The grey path shows where to go in the system. Tick steps off as you go, then tell it whether that fixed it.</span></li>
+        <li><b>Escalate</b><span>It drafts a ticket for the right team. Check it, add what you saw, and send. It's high priority when the order ships today.</span></li>
+      </ul>
+      <p class="help-note">The assistant looks things up in SAP and Deposco. It doesn't change them on its own: you or the system owner make the changes. Don't type customer personal details. The order number is enough.</p>
+    </div>
+    <footer>
+      <span class="note">Prototype: mock orders and scripted answers. <a href="guide.html" target="_blank" rel="noopener">Full user guide</a></span>
+      <button type="button" class="btn-1" id="help-close">Close</button>
+    </footer>
   </div>
 </div>
 
@@ -1105,7 +1147,8 @@ Request:
         { label: "Pick qty looks wrong on SO-100455", say: "Pick qty looks wrong on SO-100455, it says 10 each" },
         { label: "Packing slip doesn't match SO-100468", say: "Packing slip doesn't match SO-100468" },
         { label: "Label won't print for SO-100479", say: "Label won't print for SO-100479" },
-        { label: "Label won't print (no order number)", say: "The shipping label won't print" }
+        { label: "Label won't print (no order number)", say: "The shipping label won't print" },
+        { label: "New here? How to use", action: "help" }
       ]
     });
     select(c);
@@ -1118,6 +1161,7 @@ Request:
     if (t.dataset.conv) { select(convs.find(c => c.id === t.dataset.conv)); return; }
     if (t.dataset.action === "new") { startNew(); return; }
     if (t.dataset.action === "escalate") { openEscalate(active); return; }
+    if (t.dataset.action === "help") { openHelp(); return; }
     if (t.dataset.say) userSays(active, t.dataset.say);
   });
 
@@ -1169,14 +1213,33 @@ Request:
   $("guide-open").addEventListener("click", () => { $("guide-scrim").hidden = false; $("guide-close").focus(); });
   $("guide-close").addEventListener("click", () => { $("guide-scrim").hidden = true; });
 
+  // how to use
+  let helpReturn = null;
+  function openHelp() {
+    helpReturn = document.activeElement;
+    $("help-scrim").hidden = false;
+    $("help-scrim").querySelector(".modal").focus();
+  }
+  function closeHelp() {
+    $("help-scrim").hidden = true;
+    if (helpReturn && document.contains(helpReturn)) helpReturn.focus({ preventScroll: true });
+    helpReturn = null;
+  }
+  $("help-open").addEventListener("click", openHelp);
+  $("help-close").addEventListener("click", closeHelp);
+
   document.addEventListener("keydown", e => {
     if (e.key !== "Escape") return;
-    if (!$("guide-scrim").hidden) $("guide-scrim").hidden = true;
+    if (!$("help-scrim").hidden) closeHelp();
+    else if (!$("guide-scrim").hidden) $("guide-scrim").hidden = true;
     else if (!$("esc-scrim").hidden) $("esc-cancel").click();
     else toggleSide(false);
   });
-  for (const s of ["esc-scrim", "guide-scrim"]) {
-    $(s).addEventListener("click", e => { if (e.target.id === s) (s === "esc-scrim" ? $("esc-cancel") : $("guide-close")).click(); });
+  for (const s of ["esc-scrim", "guide-scrim", "help-scrim"]) {
+    $(s).addEventListener("click", e => {
+      if (e.target.id !== s) return;
+      ({ "esc-scrim": $("esc-cancel"), "guide-scrim": $("guide-close"), "help-scrim": $("help-close") })[s].click();
+    });
   }
 
   // ---------- Seed history ----------
