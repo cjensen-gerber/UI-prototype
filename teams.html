@@ -861,6 +861,11 @@ svg { flex: none; }
 
   function userSays(text) {
     push({ role: "user", kind: "text", text });
+    if (/^\s*(help|how to use|how do i use this\??|\?)\s*$/i.test(text)) {
+      push({ role: "bot", kind: "help" });
+      draw(true);
+      return;
+    }
     const c = issue;
     if (c && c.pending) {
       const { resolve } = c.pending;
@@ -1141,6 +1146,18 @@ svg { flex: none; }
           <div class="ac-actions"><button type="button" class="btn" data-act="escalate" data-issue="${c.id}" ${canEsc ? "" : "disabled"}>${c.status === "escalated" ? "Escalated" : "Escalate"}</button></div>
         </div>`;
       }
+      case "help":
+        return `<div class="ac"><div class="ac-sec acc"><div class="sub">How to use</div><h3>Use me when an order won't drop, allocate, pick, pack or ship</h3>
+            <p>Or when SAP and Deposco seem to disagree.</p></div>
+          <div class="ac-sec"><dl class="facts">
+            <dt>Start</dt><dd>Send the order number (<span class="mono">SO-…</span>) and what you see. Or just describe the problem and I'll ask.</dd>
+            <dt>Answer</dt><dd>Tap a suggested reply above the message box, or type your own.</dd>
+            <dt>Diagnosis</dt><dd>SAP is on the left, Deposco on the right. Rows marked ≠ are the mismatch. "Why it happened" explains it, and "Who can fix it" says who acts.</dd>
+            <dt>Steps</dt><dd>Each step says who does it. The grey path shows where to go in the system. Tick steps off as you go, then tell me whether that fixed it.</dd>
+            <dt>Escalate</dt><dd>I draft a ticket and post it to the right team's channel. Check it, add what you saw, and send. It's high priority when the order ships today.</dd>
+          </dl></div>
+          <div class="ac-sec"><p>I look things up in SAP and Deposco. I don't change them on my own: you or the system owner make the changes. Don't type customer personal details. The order number is enough.</p>
+            <span class="small">Type <b>help</b> any time to see this again. <a href="https://claude.ai/code/artifact/7d398cdb-688f-4f72-8004-f7b7e38defd5" target="_blank" rel="noopener">Full user guide</a></span></div></div>`;
       case "action":
         return `<div class="ac"><div class="ac-sec good"><h4>✓ ${esc(m.title)}</h4><p>${esc(m.detail)}</p><span class="small">Simulated assistant action</span></div></div>`;
       case "steps":
@@ -1375,7 +1392,8 @@ Request:
       { label: "Pick qty looks wrong on SO-100455", say: "Pick qty looks wrong on SO-100455, it says 10 each" },
       { label: "Packing slip doesn't match SO-100468", say: "Packing slip doesn't match SO-100468" },
       { label: "Label won't print for SO-100479", say: "Label won't print for SO-100479" },
-      { label: "Label won't print (no order number)", say: "The shipping label won't print" }
+      { label: "Label won't print (no order number)", say: "The shipping label won't print" },
+      { label: "New here? How to use", say: "help" }
     ]
   });
 
