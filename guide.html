@@ -1,0 +1,369 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Order Assistant User Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Gerber tokens: inlined from .claude/skills/gerber-style-guide/tokens.css so the page stays one self-contained file. */
+/*
+  Gerber Childrenswear design tokens
+  Derived from the public gerberchildrenswear.com theme (read 2026-10-01).
+  Not an official Gerber asset; official brand guidelines override these values.
+
+  Load the font in the page <head>:
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+
+  Layer 1: brand primitives (--gcw-*). These are fixed brand values and are never redefined.
+  Layer 2: semantic tokens (--bg, --ink, --accent ...). Style components with these.
+           Light is the default. Dark mode applies to internal tools only and follows
+           the OS setting unless data-theme="light" or "dark" is set on <html>.
+*/
+
+:root {
+  /* ---- Core ---- */
+  --gcw-navy: #002744;          /* brand ink, primary buttons, headings */
+  --gcw-navy-70: #2F4E65;       /* secondary text on light grounds (8.1:1 on cream) */
+  --gcw-cream: #F9F5F3;         /* default page ground, text on navy */
+  --gcw-white: #FFFFFF;
+  --gcw-mist: #F2F4F8;          /* form-field fill */
+  --gcw-line: #E6E8EC;          /* hairlines and borders */
+  --gcw-slate: #515D64;         /* alternate ink, used on butter */
+  --gcw-butter: #FEF9E3;
+
+  /* ---- Pastels: full shade + tint (site color-scheme names) ---- */
+  --gcw-jordy: #85B7EA;         --gcw-jordy-tint: #CEE2F7;
+  --gcw-maize: #F2C94C;         --gcw-maize-tint: #FCF4DB;
+  --gcw-geraldine: #F28C82;     --gcw-geraldine-tint: #FCE8E6;
+  --gcw-seanymph: #86B3A1;      --gcw-seanymph-tint: #E7F0EC;
+  --gcw-sandy: #F4A261;         --gcw-sandy-tint: #FDECDF;
+  --gcw-lavender: #8A75D1;      /* accent button only; white text */
+
+  /* ---- Retail badges (site values) ---- */
+  --gcw-sale: #C4301C;          /* also the cart bubble */
+  --gcw-new: #359679;           /* fill only: 3.6:1, too low for text */
+  --gcw-coming-soon: #7A34D6;
+
+  /* ---- Type ---- */
+  --font-sans: "Montserrat", "Helvetica Neue", Arial, system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace; /* internal tools: codes, IDs, quantities */
+  --text-body: 0.875rem;        /* 14px, as on the site */
+  --leading-body: 1.575;
+  --heading-weight: 400;
+  --subheading-weight: 600;
+  --subheading-tracking: 0.05em;
+  --button-weight: 600;
+  --button-tracking: 0.02em;
+  --h1: 2.75rem;  --h2: 2.2rem;  --h3: 1.925rem;  --h4: 1.5rem;  --h5: 1.25rem;  --h6: 1.1rem;
+  --heading-mobile-scale: 0.77;
+
+  /* ---- Shape ---- */
+  --radius-retail: 0;           /* buttons, inputs, cards, badges */
+  --radius-tool: 6px;           /* internal tools: chips, inputs, cards */
+  --button-height: 44px;
+  --page-width: 1440px;
+
+  /* ---- Semantic (light) ---- */
+  --bg: var(--gcw-cream);
+  --surface: var(--gcw-white);
+  --surface-2: var(--gcw-mist);
+  --ink: var(--gcw-navy);
+  --ink-muted: #5B6B78;         /* 5.1:1 on cream, 5.5:1 on white */
+  --line: var(--gcw-line);
+  --accent: var(--gcw-navy);
+  --accent-ink: var(--gcw-cream);
+  --accent-soft: var(--gcw-jordy-tint);
+  --focus: var(--gcw-jordy);
+
+  /* status for internal tools: text / soft fill / solid stripe */
+  --ok: #23705A;    --ok-soft: var(--gcw-seanymph-tint);    --ok-solid: var(--gcw-seanymph);
+  --warn: #8A5A00;  --warn-soft: var(--gcw-maize-tint);     --warn-solid: var(--gcw-maize);
+  --bad: var(--gcw-sale); --bad-soft: var(--gcw-geraldine-tint); --bad-solid: var(--gcw-geraldine);
+  --info: var(--gcw-navy); --info-soft: var(--gcw-jordy-tint); --info-solid: var(--gcw-jordy);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #0B1B2B;
+    --surface: #12263A;
+    --surface-2: #173049;
+    --ink: #F3EEEA;
+    --ink-muted: #9FB0C0;
+    --line: #22394F;
+    --accent: var(--gcw-jordy);
+    --accent-ink: #0B1B2B;
+    --accent-soft: #152E47;
+    --focus: var(--gcw-jordy);
+    --ok: var(--gcw-seanymph);  --ok-soft: #173229;
+    --warn: var(--gcw-maize);   --warn-soft: #33290F;
+    --bad: var(--gcw-geraldine); --bad-soft: #3A1F22;
+    --info: var(--gcw-jordy);   --info-soft: #152E47;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #0B1B2B;
+  --surface: #12263A;
+  --surface-2: #173049;
+  --ink: #F3EEEA;
+  --ink-muted: #9FB0C0;
+  --line: #22394F;
+  --accent: var(--gcw-jordy);
+  --accent-ink: #0B1B2B;
+  --accent-soft: #152E47;
+  --focus: var(--gcw-jordy);
+  --ok: var(--gcw-seanymph);  --ok-soft: #173229;
+  --warn: var(--gcw-maize);   --warn-soft: #33290F;
+  --bad: var(--gcw-geraldine); --bad-soft: #3A1F22;
+  --info: var(--gcw-jordy);   --info-soft: #152E47;
+}
+
+/* ---- Optional base styles ---- */
+.gcw-eyebrow {
+  font: var(--subheading-weight) 0.75rem/1.2 var(--font-sans);
+  letter-spacing: var(--subheading-tracking);
+  text-transform: uppercase;
+}
+.gcw-button {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-height: var(--button-height); padding: 0 1.5rem;
+  font: var(--button-weight) 0.875rem/1 var(--font-sans);
+  letter-spacing: var(--button-tracking); text-transform: uppercase;
+  border: 1px solid var(--accent); border-radius: var(--radius-retail);
+  background: var(--accent); color: var(--accent-ink); cursor: pointer;
+}
+.gcw-button--secondary { background: transparent; color: var(--accent); }
+.gcw-tm { font-size: .5em; vertical-align: .35em; line-height: 0; display: inline-block; } /* site's trademark superscript */
+
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { background: var(--bg); color: var(--ink); font: 400 16px/1.6 var(--font-sans); -webkit-font-smoothing: antialiased; }
+a { color: var(--ink); text-underline-offset: 3px; }
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.mono, code { font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-size: .9em; }
+code { background: var(--surface-2); padding: 1px 6px; border-radius: 4px; overflow-wrap: anywhere; }
+
+.proto { background: var(--warn-solid); color: var(--gcw-navy); font: 500 12.5px/1.4 var(--font-sans); padding: 7px 16px; display: flex; gap: 12px; align-items: center; justify-content: center; flex-wrap: wrap; text-align: center; }
+.proto b { font-weight: 600; letter-spacing: .05em; text-transform: uppercase; }
+.proto a { font-weight: 600; }
+
+header.top { background: var(--surface); border-bottom: 1px solid var(--line); }
+.top-inner { max-width: 860px; margin: 0 auto; padding: 14px 24px; display: flex; align-items: center; gap: 12px; }
+.mark { width: 32px; height: 32px; flex: none; display: grid; place-items: center; background: var(--accent); color: var(--accent-ink); }
+.top-inner .name { font: 400 19px/1.15 var(--font-sans); }
+.top-inner small { display: block; font-size: 12px; color: var(--ink-muted); }
+.top-inner .back { margin-left: auto; display: inline-flex; align-items: center; min-height: 44px; padding: 0 16px; border: 1px solid var(--accent); font: 600 12.5px/1 var(--font-sans); letter-spacing: .02em; text-transform: uppercase; text-decoration: none; }
+
+main { max-width: 860px; margin: 0 auto; padding: 28px 24px 72px; }
+.eyebrow { font: 600 12px/1 var(--font-sans); letter-spacing: .05em; text-transform: uppercase; color: var(--ink-muted); }
+h1 { font: 400 34px/1.2 var(--font-sans); margin: 8px 0 10px; }
+h2 { font: 400 24px/1.25 var(--font-sans); margin: 44px 0 12px; padding-top: 8px; scroll-margin-top: 16px; }
+p { margin: 0 0 12px; max-width: 68ch; }
+.lede { font-size: 17px; color: var(--ink); }
+.asof { font-size: 13px; color: var(--ink-muted); }
+.callout { background: var(--info-soft); border-radius: var(--radius-tool); padding: 12px 16px; margin: 16px 0; max-width: 68ch; }
+.callout.warn { background: var(--warn-soft); }
+
+nav.toc { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-tool); padding: 14px 18px; margin: 20px 0 8px; }
+nav.toc ol { margin: 8px 0 0; padding-left: 20px; columns: 2; column-gap: 32px; }
+nav.toc li { break-inside: avoid; padding: 2px 0; }
+
+.tbl { overflow-x: auto; margin: 12px 0 16px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-tool); }
+table { width: 100%; border-collapse: collapse; font-size: 15px; }
+th, td { text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+tr:last-child td { border-bottom: 0; }
+th { font: 600 11.5px/1.2 var(--font-sans); letter-spacing: .05em; text-transform: uppercase; color: var(--ink-muted); background: var(--surface-2); }
+td.v { font-family: var(--font-mono); font-size: 14px; }
+tr.diff td { background: var(--bad-soft); }
+td.flag { width: 36px; text-align: center; font-family: var(--font-mono); font-weight: 600; }
+tr.diff td.flag { color: var(--bad); }
+tr.same td.flag { color: var(--ok); }
+
+ul, ol { max-width: 68ch; padding-left: 22px; }
+li { margin: 4px 0; }
+li > ol, li > ul { margin-top: 4px; }
+.who { display: inline-block; font: 600 10.5px/1 var(--font-sans); letter-spacing: .05em; text-transform: uppercase; padding: 4px 6px; border-radius: 4px; background: var(--surface-2); vertical-align: 1px; }
+.who.you { background: var(--accent-soft); }
+
+footer { max-width: 860px; margin: 0 auto; padding: 0 24px 40px; font-size: 13px; color: var(--ink-muted); }
+
+@media (max-width: 600px) {
+  .top-inner, main, footer { padding-left: 16px; padding-right: 16px; }
+  .top-inner small { display: none; }
+  h1 { font-size: 27px; }
+  h2 { font-size: 21px; margin-top: 36px; }
+  nav.toc ol { columns: 1; }
+  th, td { padding: 8px 10px; font-size: 14px; }
+}
+@media print {
+  .proto, header.top .back, nav.toc { display: none; }
+  body { background: #fff; }
+}
+</style>
+</head>
+<body>
+<div class="proto" role="note"><b>Prototype</b> <span>Examples use made-up orders. Not connected to SAP or Deposco.</span></div>
+
+<header class="top">
+  <div class="top-inner">
+    <span class="mark" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M3 8l9-5 9 5v8l-9 5-9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/></svg></span>
+    <span><span class="name">Warehouse Order Assistant</span><small>User guide for supervisors and floor staff</small></span>
+    <a class="back" href="index.html">Open the assistant</a>
+  </div>
+</header>
+
+<main id="main">
+  <span class="eyebrow">User guide</span>
+  <h1>Getting orders unstuck with the Order Assistant</h1>
+  <p class="lede">The Order Assistant finds out why an order is stuck between SAP and Deposco, and tells you exactly what to do next.</p>
+  <p class="asof">As of 3 October 2026</p>
+
+  <nav class="toc" aria-label="Contents">
+    <span class="eyebrow">On this page</span>
+    <ol>
+      <li><a href="#for">What it's for</a></li>
+      <li><a href="#start">How to start</a></li>
+      <li><a href="#questions">Answering its questions</a></li>
+      <li><a href="#card">Reading the diagnosis card</a></li>
+      <li><a href="#steps">Following the steps</a></li>
+      <li><a href="#escalate">Escalating</a></li>
+      <li><a href="#example">Worked example</a></li>
+      <li><a href="#tips">Tips and quick reference</a></li>
+    </ol>
+  </nav>
+
+  <h2 id="for">What the assistant is for</h2>
+  <p>Use it whenever an order won't <b>drop, allocate, pick, pack or ship</b>, or when the two systems seem to disagree. It's good at problems like these:</p>
+  <div class="tbl"><table>
+    <thead><tr><th scope="col">What you see on the floor</th><th scope="col">What it usually finds</th></tr></thead>
+    <tbody>
+      <tr><td>The order isn't in Deposco</td><td>SAP tried to send it, but the send failed</td></tr>
+      <tr><td>The order won't allocate</td><td>Stock is on hold in Deposco but free in SAP</td></tr>
+      <tr><td>The pick quantity looks wrong</td><td>A pack size (for example, 1 pack = 5 each) is missing in Deposco</td></tr>
+      <tr><td>The packing list doesn't match the order</td><td>The order was changed in SAP after it was released to a wave</td></tr>
+      <tr><td>The shipping label won't print</td><td>The address was corrected in SAP but not in Deposco</td></tr>
+    </tbody>
+  </table></div>
+  <div class="callout"><b>What it never does:</b> it looks things up in SAP and Deposco, but it doesn't change either system on its own. Any change is made by you or by the team that owns that system, and the assistant tells you who that is.</div>
+  <p class="asof">Examples in this guide use the prototype's made-up orders (SO-100412 and so on). Real orders will look the same.</p>
+
+  <h2 id="start">How to start</h2>
+  <p>Tap <b>New issue</b>, then give it the order number and what you see, in one line. The order number is the fastest route, because it's the first thing the assistant looks up.</p>
+  <div class="tbl"><table>
+    <thead><tr><th scope="col">Good start</th><th scope="col">Why it works</th></tr></thead>
+    <tbody>
+      <tr><td>"SO-100437 won't allocate"</td><td>Order number plus the symptom: it can start checking straight away</td></tr>
+      <tr><td>"Label won't print for SO-100479, UPS says address error"</td><td>Includes the error message you saw</td></tr>
+      <tr><td>"Pick qty looks wrong on SO-100455, screen says 10 each"</td><td>Says what the screen shows, so it can compare</td></tr>
+    </tbody>
+  </table></div>
+  <div class="tbl"><table>
+    <thead><tr><th scope="col">Weaker start</th><th scope="col">What happens</th></tr></thead>
+    <tbody>
+      <tr><td>"Help" or "something's wrong"</td><td>It asks which kind of problem you have, which adds a step</td></tr>
+      <tr><td>"The pink bodysuits are short"</td><td>It needs the order number before it can look anything up</td></tr>
+    </tbody>
+  </table></div>
+  <p>No order number to hand? Just describe the problem. It will ask for the number, and you can type it or scan it from the pick ticket.</p>
+
+  <h2 id="questions">Answering its questions</h2>
+  <p>The assistant asks a few short questions while it checks the systems. Each answer changes what it looks at or how urgent it treats the order, so a quick, accurate answer gets you a better fix.</p>
+  <ul>
+    <li><b>Tap a suggested answer</b> to save typing, or type your own if none fits.</li>
+    <li><b>Say what you actually see.</b> If you haven't checked the bin, tap "Haven't checked" rather than guessing.</li>
+    <li><b>Common questions:</b>
+      <ul>
+        <li>Does it ship today? This sets the priority if it needs to escalate.</li>
+        <li>Which line is the problem?</li>
+        <li>What does the screen or error message say?</li>
+        <li>How far along is the order (picking, at pack, packed)?</li>
+      </ul>
+    </li>
+    <li>Under <b>What I checked</b>, it lists each lookup as it goes, so you can see it's working.</li>
+  </ul>
+
+  <h2 id="card">Reading the diagnosis card</h2>
+  <p>The diagnosis card shows SAP and Deposco side by side, so you can see exactly where they disagree. SAP is always on the left and Deposco on the right.</p>
+  <div class="tbl"><table>
+    <thead><tr><th scope="col">Part of the card</th><th scope="col">What it tells you</th></tr></thead>
+    <tbody>
+      <tr><td><b>Title and severity tag</b></td><td>The problem in a few words, and how it affects the order, for example "Can't allocate" or "Blocked at label"</td></tr>
+      <tr><td><b>Field rows</b></td><td>The same fact in each system. Rows marked <b>≠</b> (shaded red) are the mismatch; rows marked <b>=</b> agree.</td></tr>
+      <tr><td><b>Why it happened</b></td><td>A short plain-language explanation of the root cause</td></tr>
+      <tr><td><b>Who can fix it</b></td><td>You, a shift lead, or a system owner team such as Quality, SAP order support or Deposco admin</td></tr>
+    </tbody>
+  </table></div>
+  <p>Example, for an order that won't allocate:</p>
+  <div class="tbl"><table>
+    <thead><tr><th scope="col">Field</th><th scope="col">SAP</th><th scope="col">Deposco</th><th scope="col"><span class="mono" aria-hidden="true">≠/=</span><span hidden>Match</span></th></tr></thead>
+    <tbody>
+      <tr class="diff"><td>Ordered</td><td class="v">30 EA</td><td class="v">30 EA · 12 allocated</td><td class="flag" aria-label="Mismatch">≠</td></tr>
+      <tr class="same"><td>On hand</td><td class="v">48 EA</td><td class="v">48 EA</td><td class="flag" aria-label="Match">=</td></tr>
+      <tr class="diff"><td>Available to allocate</td><td class="v">48 EA unrestricted</td><td class="v">12 EA</td><td class="flag" aria-label="Mismatch">≠</td></tr>
+      <tr class="diff"><td>Hold status</td><td class="v">None</td><td class="v">Inspection hold since 28 Sep</td><td class="flag" aria-label="Mismatch">≠</td></tr>
+    </tbody>
+  </table></div>
+  <p>Here the stock exists in both systems, but Deposco still has 36 units on an inspection hold, so it can only allocate 12.</p>
+
+  <h2 id="steps">Following the steps</h2>
+  <p>After the card, the assistant gives you a numbered list of steps to fix the order. Do them in order, because later steps depend on earlier ones.</p>
+  <ul>
+    <li><b>The label on each step says who does it.</b> <span class="who you">You</span> means you, while <span class="who">Shift lead</span>, <span class="who">Quality team</span> or <span class="who">SAP order support</span> means that person or team. Don't attempt steps that aren't yours; your login may not allow them, and that's on purpose.</li>
+    <li><b>The grey path shows where to go</b>, for example <code>Deposco › Waves › W-2287 › Re-allocate</code>.</li>
+    <li><b>Tick each step</b> as you finish it, so you (and the next shift) can see where you got to.</li>
+    <li><b>Tell it whether that fixed it.</b> "Yes, it's fixed" closes the issue and adds it to the fix log, which helps the system owners stop it happening again. "No, escalate" opens a ticket for you.</li>
+  </ul>
+  <p>If a step doesn't match what you see on screen, stop and tell the assistant what you see. Don't improvise around it.</p>
+
+  <h2 id="escalate">Escalating</h2>
+  <p>Escalate when a step needs another team, or when the steps didn't fix it. The assistant writes the ticket for you, so you don't have to retype anything.</p>
+  <ol>
+    <li>Tap <b>Escalate</b> at the top of the conversation, or answer "No, escalate".</li>
+    <li>Check the draft. It already names the right team, the order, what the assistant found and what was tried.</li>
+    <li>Add anything you saw that isn't in it, such as a carton count or a photo reference.</li>
+    <li>Check the priority. It's set to <b>High</b> automatically when the order ships today.</li>
+    <li>Tap <b>Send escalation</b>. The issue shows as <b>Escalated</b> in your list.</li>
+  </ol>
+  <p>The owner team gets the ticket with the evidence attached. In the Teams version, you get a message in your chat when they pick it up and when they mark it fixed. Each owner team sets its own reply targets. The prototype shows about 30 minutes for high priority and 4 hours for normal, but treat those as placeholders until the teams confirm them.</p>
+
+  <h2 id="example">Worked example: an order that won't allocate</h2>
+  <p>This is the prototype's <span class="mono">SO-100437</span>, start to finish, in about two minutes.</p>
+  <ol>
+    <li><b>You:</b> "SO-100437 won't allocate."</li>
+    <li><b>Assistant:</b> loads the order (3 lines, wave <span class="mono">W-2287</span>) and asks which line won't allocate. <b>You</b> tap "Line 10 · 2210-3M-PNK".</li>
+    <li><b>Assistant:</b> asks whether you've checked pick location <span class="mono">A-14-03</span>. <b>You</b> tap "Bin is empty".</li>
+    <li><b>Assistant:</b> compares SAP stock with Deposco, checks holds, and finds the receipt for PO <span class="mono">4500082231</span>.</li>
+    <li><b>Diagnosis card:</b> "Stock is on an inspection hold in Deposco". SAP shows 48 units unrestricted, while Deposco has 36 on hold in <span class="mono">QA-HOLD-01</span>. <b>Who can fix it:</b> Quality team.</li>
+    <li><b>Steps:</b>
+      <ol>
+        <li><span class="who you">You</span> confirm 6 cartons in <span class="mono">QA-HOLD-01</span> and check for green inspection tags.</li>
+        <li><span class="who">Quality team</span> release the hold in Deposco.</li>
+        <li><span class="who you">You</span> re-allocate the order from the wave.</li>
+      </ol>
+    </li>
+    <li><b>You</b> tap <b>Escalate</b>. The ticket goes to the Quality team marked <b>High</b> because the order ships today, and the issue shows as Escalated in your list.</li>
+  </ol>
+
+  <h2 id="tips">Tips and quick reference</h2>
+  <div class="tbl"><table>
+    <thead><tr><th scope="col">Do</th><th scope="col">Don't</th></tr></thead>
+    <tbody>
+      <tr><td>Start with the order number and the symptom</td><td>Start with "help" and wait</td></tr>
+      <tr><td>Copy error messages word for word</td><td>Paraphrase an error you half-remember</td></tr>
+      <tr><td>Answer "Haven't checked" when you haven't</td><td>Guess, which can send it down the wrong path</td></tr>
+      <tr><td>Stick to steps labelled "You"</td><td>Try steps meant for another team</td></tr>
+      <tr><td>Tick steps off and confirm the fix</td><td>Leave issues open after the order ships</td></tr>
+      <tr><td>Use order, delivery, SKU and bin numbers</td><td>Type customer names, addresses or phone numbers; the order number is enough</td></tr>
+    </tbody>
+  </table></div>
+  <p><b>One order per issue.</b> For a second order, tap <b>New issue</b> so each fix is logged separately.</p>
+  <p><b>Results reflect the latest data copy.</b> The assistant reads copies of SAP and Deposco that refresh regularly. If something changed in the last few minutes, wait a moment and ask again.</p>
+  <p><b>Getting help:</b> for problems with the assistant itself, contact your shift lead or the warehouse systems team. For anything urgent on a shipping order, escalate from the conversation so the right team sees it straight away.</p>
+</main>
+<footer>Warehouse Order Assistant prototype · Mock data only.</footer>
+</body>
+</html>

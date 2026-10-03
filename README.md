@@ -10,6 +10,10 @@ The prototype exists to align on the end-state experience before the real agent 
 
 To run it locally, open `index.html` in any modern browser. It's a single file with no build step and no backend. It loads fonts from Google Fonts and falls back to system fonts when offline.
 
+## User guide
+
+`guide.html` is the warehouse user guide (live at https://cjensen-gerber.github.io/UI-prototype/guide.html once merged). Both prototypes link to it from **How to use**. It's a copy of the team's Claude Doc, so update both together.
+
 ## Teams version
 
 `teams.html` shows the same assistant as a Microsoft Teams app. It's live at https://cjensen-gerber.github.io/UI-prototype/teams.html, and the banner on each page links to the other version. It uses the same five mock orders and scripts, plus what Teams adds:
